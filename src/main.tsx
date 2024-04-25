@@ -14,28 +14,48 @@ import Error404Page from "@/pages/Error404Page.tsx";
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <SignInPage />,
-        // errorElement: <ErrorPage />,
+        element: <SignInPage />
     },
     {
         path: "/signup",
-        element: <SignUpPage />,
-        // errorElement: <ErrorPage />,
+        element: <SignUpPage />
     },
     {
         path: "/verify",
-        element: <OtpVerification />,
-        // errorElement: <ErrorPage />,
+        element: <OtpVerification />
     },
     {
         path: "/dashboard",
-        element: <DashboardPage />,
+        element: <DashboardPage activePageId="dashboard"/>,
         errorElement: <Error404Page />,
     },
     {
+        path: "/orders",
+        element: <DashboardPage activePageId="orders" />
+    },
+    {
+        path: "/customers",
+        element: <DashboardPage activePageId="customers" />
+    },
+    {
+        path: "/products",
+        element: <DashboardPage activePageId="products" />
+    },
+    {
+        path: "/analytics",
+        element: <DashboardPage activePageId="analytics" />
+    },
+    {
+        path: "/settings",
+        element: <DashboardPage activePageId="settings" />
+    },
+    {
+        path: "/profile",
+        element: <DashboardPage activePageId="profile" />
+    },
+    {
         path: "/test",
-        element: <TestPage />,
-        // errorElement: <ErrorPage />,
+        element: <TestPage />
     },
 ]);
 

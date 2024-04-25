@@ -1,34 +1,38 @@
 import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet.tsx";
 import {Button} from "@/components/ui/button.tsx";
 import {Home, LineChart, Package, Package2, PanelLeft, Search, ShoppingCart, Users2} from "lucide-react";
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList, BreadcrumbPage,
-    BreadcrumbSeparator
-} from "@/components/ui/breadcrumb.tsx";
+import {Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList} from "@/components/ui/breadcrumb.tsx";
 import {Input} from "@/components/ui/input.tsx";
 import {
     DropdownMenu,
-    DropdownMenuContent, DropdownMenuItem,
-    DropdownMenuLabel, DropdownMenuSeparator,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.tsx";
 import {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
-const Header = () => {
+const Header = ({pageTitle}) => {
     const [username, setUsername] = useState<string>("");
     const navigate = useNavigate();
+
 
     useEffect(() => {
         setUsername(sessionStorage.getItem("name") || "");
     }, []);
 
-    const handleLogout =  () => {
+
+    const handleLogout = () => {
         sessionStorage.clear();
         navigate("/");
+    }
+
+    const handleClick = (to: string) => {
+        console.log(`navigating to ${to}`);
+        navigate(to);
+        console.log(`navigated to ${to}`);
     }
 
     return (
@@ -45,48 +49,48 @@ const Header = () => {
                 </SheetTrigger>
                 <SheetContent side="left" className="sm:max-w-xs">
                     <nav className="grid gap-6 text-lg font-medium">
-                        <a
-                            href="#"
+                        <Link
+                            to="/dashboard" onClick={() => handleClick("/dashboard")}
                             className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
                         >
                             <Package2 className="h-5 w-5 transition-all group-hover:scale-110"/>
                             <span className="sr-only">File Server</span>
-                        </a>
-                        <a
-                            href="#"
+                        </Link>
+                        <Link
+                            to="/dashboard" onClick={() => handleClick("/dashboard")}
                             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                         >
                             <Home className="h-5 w-5"/>
                             Dashboard
-                        </a>
-                        <a
-                            href="#"
+                        </Link>
+                        <Link
+                            to="/orders" onClick={() => handleClick("/orders")}
                             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                         >
                             <ShoppingCart className="h-5 w-5"/>
                             Orders
-                        </a>
-                        <a
-                            href="#"
+                        </Link>
+                        <Link
+                            to="/products" onClick={() => handleClick("/products")}
                             className="flex items-center gap-4 px-2.5 text-foreground"
                         >
                             <Package className="h-5 w-5"/>
                             Products
-                        </a>
-                        <a
-                            href="#"
+                        </Link>
+                        <Link
+                            to="/customers" onClick={() => handleClick("/customers")}
                             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                         >
                             <Users2 className="h-5 w-5"/>
                             Customers
-                        </a>
-                        <a
-                            href="#"
+                        </Link>
+                        <Link
+                            to="/settings" onClick={() => handleClick("/settings")}
                             className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                         >
                             <LineChart className="h-5 w-5"/>
                             Settings
-                        </a>
+                        </Link>
                     </nav>
                 </SheetContent>
             </Sheet>
@@ -94,18 +98,8 @@ const Header = () => {
                 <BreadcrumbList>
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <a href="#">Dashboard</a>
+                            <Link to={`/${pageTitle}`}>{pageTitle.toLocaleUpperCase()}</Link>
                         </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator/>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                            <a href="#">Products</a>
-                        </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator/>
-                    <BreadcrumbItem>
-                        <BreadcrumbPage>All Products</BreadcrumbPage>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
@@ -125,7 +119,7 @@ const Header = () => {
                         className="overflow-hidden rounded-full"
                     >
                         <img
-                            src="https://api.dicebear.com/8.x/adventurer/svg?seed=Molly"
+                            src="https://api.dicebear.com/8.x/adventurer/svg?seed=Kelvin"
                             width={36}
                             height={36}
                             alt="Avatar"
@@ -135,9 +129,6 @@ const Header = () => {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                     <DropdownMenuLabel>{username}</DropdownMenuLabel>
-                    <DropdownMenuSeparator/>
-                    <DropdownMenuItem>Settings</DropdownMenuItem>
-                    <DropdownMenuItem>Support</DropdownMenuItem>
                     <DropdownMenuSeparator/>
                     <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
                 </DropdownMenuContent>
