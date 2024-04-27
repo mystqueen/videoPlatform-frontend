@@ -1,7 +1,8 @@
-import {Home, LineChart, Package, Package2, Settings, ShoppingCart, Users2} from "lucide-react";
+import {Home, LineChart, Package, Package2, Settings, Users2} from "lucide-react";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip.tsx";
 import {useState} from "react";
 import {Link} from "react-router-dom";
+import {LuFileText} from "react-icons/lu";
 
 const SideBar = (props: { handleActiveItem?: (itemId: string) => void }) => {
     const [activeItemId, setActiveItemId] = useState<string | null>("dashboard");
@@ -40,16 +41,16 @@ const SideBar = (props: { handleActiveItem?: (itemId: string) => void }) => {
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <Link
-                                to="/orders" onClick={() => handleClick("orders")}
+                                to="/files" onClick={() => handleClick("files")}
                                 className={`flex h-9 w-9 items-center justify-center rounded-lg  ${
-                                    activeItemId === 'orders' ? 'bg-accent text-accent-foreground' : 'text-muted-foreground'
+                                    activeItemId === 'files' ? 'bg-accent text-accent-foreground' : 'text-muted-foreground'
                                 } transition-colors hover:text-foreground md:h-8 md:w-8`}
                             >
-                                <ShoppingCart className="h-5 w-5"/>
-                                <span className="sr-only">Orders</span>
+                                <LuFileText className="h-5 w-5"/>
+                                <span className="sr-only">Files</span>
                             </Link>
                         </TooltipTrigger>
-                        <TooltipContent side="right">Orders</TooltipContent>
+                        <TooltipContent side="right">Files</TooltipContent>
                     </Tooltip>
                     <Tooltip>
                         <TooltipTrigger asChild>

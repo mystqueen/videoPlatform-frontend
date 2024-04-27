@@ -1,8 +1,7 @@
 import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet.tsx";
 import {Button} from "@/components/ui/button.tsx";
-import {Home, LineChart, Package, Package2, PanelLeft, Search, ShoppingCart, Users2} from "lucide-react";
+import {Home, LineChart, Package, Package2, PanelLeft, ShoppingCart, Users2} from "lucide-react";
 import {Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList} from "@/components/ui/breadcrumb.tsx";
-import {Input} from "@/components/ui/input.tsx";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -14,9 +13,10 @@ import {
 import {useEffect, useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 
-const Header = ({pageTitle}) => {
+const Header = (props: { pageTitle ?: string }) => {
     const [username, setUsername] = useState<string>("");
     const navigate = useNavigate();
+    const pageTitle = props.pageTitle;
 
 
     useEffect(() => {
@@ -98,18 +98,18 @@ const Header = ({pageTitle}) => {
                 <BreadcrumbList>
                     <BreadcrumbItem>
                         <BreadcrumbLink asChild>
-                            <Link to={`/${pageTitle}`}>{pageTitle.toLocaleUpperCase()}</Link>
+                            <Link to={`/${pageTitle}`}>{pageTitle?.toLocaleUpperCase()}</Link>
                         </BreadcrumbLink>
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
             <div className="relative ml-auto flex-1 md:grow-0">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"/>
-                <Input
-                    type="search"
-                    placeholder="Search..."
-                    className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
-                />
+                {/*<Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"/>*/}
+                {/*<Input*/}
+                {/*    type="search"*/}
+                {/*    placeholder="Search..."*/}
+                {/*    className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"*/}
+                {/*/>*/}
             </div>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>

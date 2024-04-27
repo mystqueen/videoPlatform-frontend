@@ -8,7 +8,7 @@ import {Input} from "@/components/ui/input"
 
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle,} from "@/components/ui/card"
 import {LuEye, LuEyeOff} from "react-icons/lu";
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {Loader2} from "lucide-react";
 import axios from "axios";
 import {useToast} from "@/components/ui/use-toast.ts";
@@ -85,7 +85,7 @@ const SignInPage = () => {
                     sessionStorage.setItem("user_type", signInMethod);
                 } else {
                     sessionStorage.setItem("email", response.data.data.email);
-                    setTimeout(() => navigate("/verify"), 1500);
+                    navigate("/verify");
                 }
 
             } else {

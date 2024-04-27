@@ -26,32 +26,32 @@ const router = createBrowserRouter([
     },
     {
         path: "/dashboard",
-        element: <DashboardPage activePageId="dashboard"/>,
+        element: <DashboardPage />,
         errorElement: <Error404Page />,
     },
     {
-        path: "/orders",
-        element: <DashboardPage activePageId="orders" />
+        path: "/files",
+        element: <DashboardPage />
     },
     {
         path: "/customers",
-        element: <DashboardPage activePageId="customers" />
+        element: <DashboardPage />
     },
     {
         path: "/products",
-        element: <DashboardPage activePageId="products" />
+        element: <DashboardPage />
     },
     {
         path: "/analytics",
-        element: <DashboardPage activePageId="analytics" />
+        element: <DashboardPage />
     },
     {
         path: "/settings",
-        element: <DashboardPage activePageId="settings" />
+        element: <DashboardPage />
     },
     {
         path: "/profile",
-        element: <DashboardPage activePageId="profile" />
+        element: <DashboardPage />
     },
     {
         path: "/test",
