@@ -8,6 +8,7 @@ import OtpVerification from "@/pages/OtpVerificationPage.tsx";
 import DashboardPage from "@/pages/DashboardPage.tsx";
 import TestPage from "@/pages/TestPage.tsx";
 import Error404Page from "@/pages/Error404Page.tsx";
+import React from 'react';
 
 
 const router = createBrowserRouter([
