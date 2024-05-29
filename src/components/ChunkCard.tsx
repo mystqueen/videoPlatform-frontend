@@ -1,5 +1,4 @@
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card.tsx";
-import React from "react";
 
 const ChunkCard = (props: { cardTitle: string, cardContent: string, cardSubText?: string, cardIcon: React.ReactElement }) => {
     const {cardTitle, cardContent, cardSubText, cardIcon} = props;

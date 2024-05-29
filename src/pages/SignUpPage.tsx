@@ -69,7 +69,7 @@ const SignUpPage = () => {
 
         const options = {
             method: 'POST',
-            url: `http://testserver.com:8080/${signInMethod}/register`,
+            url: `https://file-server-zr8t.onrender.com/${signInMethod}/register`,
             headers: {'Content-Type': 'application/json'},
             data: {
                 fullname: values.fullname,

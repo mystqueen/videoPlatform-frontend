@@ -1,5 +1,9 @@
+type LoadingOverlayProps = {
+    isLoading: boolean;
+    message?: string;
+};
 
-const LoadingOverlay = ({isLoading, message}) => {
+const LoadingOverlay = ({ isLoading, message }: LoadingOverlayProps) => {
     return (
         <>
             {isLoading &&

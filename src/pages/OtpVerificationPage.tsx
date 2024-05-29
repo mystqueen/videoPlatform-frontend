@@ -53,7 +53,7 @@ const OtpVerification = () => {
 
         const options = {
             method: 'POST',
-            url: `http://testserver.com:8080/${signInMethod}/otp/new`,
+            url: `https://file-server-zr8t.onrender.com/${signInMethod}/otp/new`,
             headers: {'Content-Type': 'application/json'},
             data: {
                 email: sessionStorage.getItem("email")
@@ -97,7 +97,7 @@ const OtpVerification = () => {
 
         const options = {
             method: 'POST',
-            url: `http://testserver.com:8080/${signInMethod}/otp/verify`,
+            url: `https://file-server-zr8t.onrender.com/${signInMethod}/otp/verify`,
             headers: {'Content-Type': 'application/json'},
             data: {
                 otp: values.pin,
