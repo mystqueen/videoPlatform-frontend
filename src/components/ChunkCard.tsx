@@ -1,4 +1,5 @@
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card.tsx";
+import {Skeleton} from "@/components/ui/skeleton.tsx";
 
 const ChunkCard = (props: { cardTitle: string, cardContent: string, cardSubText?: string, cardIcon: React.ReactElement }) => {
     const {cardTitle, cardContent, cardSubText, cardIcon} = props;
@@ -11,7 +12,7 @@ const ChunkCard = (props: { cardTitle: string, cardContent: string, cardSubText?
                 <>{cardIcon}</>
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{cardContent}</div>
+                <div className="text-2xl font-bold">{cardContent || <Skeleton className="h-6 w-[30px]"/>}</div>
                 <p className="text-xs text-muted-foreground">
                     {cardSubText || ""}
                 </p>

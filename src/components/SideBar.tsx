@@ -1,4 +1,4 @@
-import {Home, LineChart, Package, Package2, Settings, Users2} from "lucide-react";
+import {Home, LineChart, Package, Settings, Users2} from "lucide-react";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip.tsx";
 import {useState} from "react";
 import {Link} from "react-router-dom";
@@ -17,10 +17,10 @@ const SideBar = (props: { handleActiveItem?: (itemId: string) => void }) => {
             <nav className="flex flex-col items-center gap-4 px-2 sm:py-5">
                 <Link
                     to="/dashboard" onClick={() => handleClick("dashboard")}
-                    className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary
+                    className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full border-4 border-primary-foreground bg-primary-foreground
                     text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
                 >
-                    <Package2 className="h-4 w-4 transition-all group-hover:scale-110"/>
+                    <img src="/public/icon.png" width="36"/>
                     <span className="sr-only">File Server</span>
                 </Link>
                 <TooltipProvider>
