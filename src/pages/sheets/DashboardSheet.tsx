@@ -20,13 +20,15 @@ const DashboardSheet = (props: { navigateTo: () => void }) => {
     const [recentEmails, setRecentEmails] = useState([]);
     const [loadedRecentEmails, setLoadedRecentEmails] = useState(false);
     const {navigateTo} = props;
+    const baseUrl = import.meta.env.PORT || "https://file-server-zr8t.onrender.com/";
 
-    const downloadsCountUrl = "http://testserver.com:8080/admin/downloads/count";
-    const filesCountUrl = "http://testserver.com:8080/admin/files/count";
-    const emailsCountUrl = "http://testserver.com:8080/admin/emails/count";
-    const usersCountUrl = "http://testserver.com:8080/admin/users/count";
-    const recentFilesUrl = "http://testserver.com:8080/admin/files/recent";
-    const recentEmailsUrl = "http://testserver.com:8080/admin/emails/recent";
+    console.log(baseUrl);
+    const downloadsCountUrl = `${baseUrl}/admin/downloads/count`;
+    const filesCountUrl = `${baseUrl}/admin/files/count`;
+    const emailsCountUrl = `${baseUrl}/admin/emails/count`;
+    const usersCountUrl = `${baseUrl}/admin/users/count`;
+    const recentFilesUrl = `${baseUrl}/admin/files/recent`;
+    const recentEmailsUrl = `${baseUrl}/admin/emails/recent`;
 
     const axiosInstance = axios.create({
         method: 'GET',
