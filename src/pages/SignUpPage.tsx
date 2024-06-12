@@ -45,6 +45,7 @@ const SignUpPage = () => {
         },
     })
 
+    const baseUrl = import.meta.env.PORT || "https://file-server-zr8t.onrender.com/";
     const {toast} = useToast();
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
@@ -69,7 +70,7 @@ const SignUpPage = () => {
 
         const options = {
             method: 'POST',
-            url: `http://testserver.com:8080/${signInMethod}/register`,
+            url: `${baseUrl}/${signInMethod}/register`,
             headers: {'Content-Type': 'application/json'},
             data: {
                 fullname: values.fullname,
