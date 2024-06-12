@@ -20,7 +20,7 @@ const DashboardSheet = (props: { navigateTo: () => void }) => {
     const [recentEmails, setRecentEmails] = useState([]);
     const [loadedRecentEmails, setLoadedRecentEmails] = useState(false);
     const {navigateTo} = props;
-    const baseUrl = import.meta.env.PORT || "https://file-server-zr8t.onrender.com/";
+    const baseUrl = import.meta.env.PORT || "https://file-server-zr8t.onrender.com";
 
     console.log(baseUrl);
     const downloadsCountUrl = `${baseUrl}/admin/downloads/count`;
