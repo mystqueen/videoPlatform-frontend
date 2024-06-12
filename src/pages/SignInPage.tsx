@@ -34,7 +34,7 @@ const SignInPage = () => {
         },
     })
 
-    const baseUrl = import.meta.env.PORT || "https://file-server-zr8t.onrender.com/";
+    const baseUrl = import.meta.env.PORT || "https://file-server-zr8t.onrender.com";
     const {toast} = useToast();
     const [showPassword, setShowPassword] = useState(false);
     const [signInMethod, setSignInMethod] = useState("admin");
