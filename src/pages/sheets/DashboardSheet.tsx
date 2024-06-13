@@ -12,17 +12,22 @@ import getIconUrl from "@/utils/icons.ts";
 
 const DashboardSheet = (props: { navigateTo: () => void }) => {
 
-    const [totalFiles, setTotalFiles] = useState("");
-    const [totalFilesDownloads, setTotalFilesDownloads] = useState("");
-    const [totalEmailsSent, setTotalEmailsSent] = useState("");
-    const [usersCount, setUsersCount] = useState("");
+    const [totalFiles, setTotalFiles] = useState("0");
+    const [totalFilesDownloads, setTotalFilesDownloads] = useState("0");
+    const [totalEmailsSent, setTotalEmailsSent] = useState("0");
+    const [usersCount, setUsersCount] = useState("0");
     const [recentFiles, setRecentFiles] = useState([]);
     const [recentEmails, setRecentEmails] = useState([]);
     const [loadedRecentEmails, setLoadedRecentEmails] = useState(false);
+    const [loadedTotalFiles, setLoadedTotalFiles] = useState(false);
+    const [loadedTotalFilesDownloads, setLoadedTotalFilesDownloads] = useState(false);
+    const [loadedUserCount, setLoadedUserCount] = useState(false);
+    const [loadedRecentFiles, setLoadedRecentFiles] = useState(false);
+    const [loadedEmailCount, setLoadedEmailCount] = useState(false);
     const {navigateTo} = props;
+    // const baseUrl = import.meta.env.PORT || "http://testserver.com:8080";
     const baseUrl = import.meta.env.PORT || "https://file-server-zr8t.onrender.com";
 
-    console.log(baseUrl);
     const downloadsCountUrl = `${baseUrl}/admin/downloads/count`;
     const filesCountUrl = `${baseUrl}/admin/files/count`;
     const emailsCountUrl = `${baseUrl}/admin/emails/count`;
@@ -44,38 +49,52 @@ const DashboardSheet = (props: { navigateTo: () => void }) => {
         } else {
             console.log("downloads count error:", response.data.error);
         }
+    }).catch(() => {
+        setLoadedTotalFilesDownloads(true);
     });
 
     axiosInstance.get(filesCountUrl).then((response) => {
         if (response.status === 200) {
             setTotalFiles(response.data.data.count);
+            setLoadedTotalFiles(true);
         } else {
             console.log("files count error:", response.data.error);
         }
+    }).catch(() => {
+        setLoadedTotalFiles(true);
     });
 
     axiosInstance.get(emailsCountUrl).then((response) => {
         if (response.status === 200) {
             setTotalEmailsSent(response.data.data.count);
+            setLoadedEmailCount(true);
         } else {
             console.log("emails count error:", response.data.error);
         }
+    }).catch(() => {
+        setLoadedEmailCount(true);
     });
 
     axiosInstance.get(usersCountUrl).then((response) => {
         if (response.status === 200) {
             setUsersCount(response.data.data.count);
+            setLoadedUserCount(true);
         } else {
             console.log("most downloaded file error:", response.data.error);
         }
+    }).catch(() => {
+        setLoadedUserCount(true);
     });
 
     axiosInstance.get(recentFilesUrl).then((response) => {
         if (response.status === 200) {
             setRecentFiles(response.data.data);
+            setLoadedRecentFiles(true);
         } else {
             console.log("recent files error:", response.data.error);
         }
+    }).catch(() => {
+        setLoadedRecentFiles(true);
     });
 
     axiosInstance.get(recentEmailsUrl).then((response) => {
@@ -85,6 +104,8 @@ const DashboardSheet = (props: { navigateTo: () => void }) => {
         } else {
             console.log("recent emails error:", response.data.error);
         }
+    }).catch(() => {
+        setLoadedRecentEmails(true);
     });
 
     return (
@@ -94,22 +115,22 @@ const DashboardSheet = (props: { navigateTo: () => void }) => {
                     cardTitle="Total Files Uploaded"
                     cardContent={totalFiles.toLocaleString()}
                     cardIcon={<FileUp className="h-6 w-6 text-muted-foreground"/>}
-                />
+                    isLoaded={loadedTotalFiles}/>
                 <ChunkCard
                     cardTitle="Total File Downloads"
                     cardContent={totalFilesDownloads.toLocaleString()}
                     cardIcon={<FileDown className="h-6 w-6 text-muted-foreground"/>}
-                />
+                    isLoaded={loadedTotalFilesDownloads}/>
                 <ChunkCard
                     cardTitle="Total Emails Sent"
                     cardContent={totalEmailsSent.toLocaleString()}
                     cardIcon={<MdAlternateEmail className="h-6 w-6 text-muted-foreground"/>}
-                />
+                    isLoaded={loadedEmailCount}/>
                 <ChunkCard
                     cardTitle="Total Users"
                     cardContent={usersCount.toLocaleString()}
                     cardIcon={<User className="h-6 w-6 text-muted-foreground"/>}
-                />
+                    isLoaded={loadedUserCount}/>
             </div>
             <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
                 <Card
@@ -141,7 +162,7 @@ const DashboardSheet = (props: { navigateTo: () => void }) => {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {recentFiles.length > 0 ?
+                                {loadedRecentFiles ? (recentFiles.length > 0 ?
                                     (recentFiles.map((row: {
                                         _id: string,
                                         path: string,
@@ -161,18 +182,47 @@ const DashboardSheet = (props: { navigateTo: () => void }) => {
                                         </TableRow>
                                     ))) : (
                                         <>
-                                            {[...Array(5)].map((_, index) => (
-                                                <TableRow key={index}>
-                                                    <TableCell><Skeleton className="h-4 w-[50px]"/></TableCell>
-                                                    <TableCell><Skeleton className="h-4 w-[150px]"/></TableCell>
-                                                    <TableCell><Skeleton className="h-4 w-[50px]"/></TableCell>
-                                                    <TableCell><Skeleton className="h-4 w-[80px]"/></TableCell>
-                                                    <TableCell><Skeleton
-                                                        className="h-4 w-[80px] float-end"/></TableCell>
-                                                </TableRow>
-                                            ))}
+                                            <TableRow>
+                                                <TableCell></TableCell>
+                                                <TableCell></TableCell>
+                                                <TableCell>
+                                                    <div className="flex justify-center items-center gap-4">
+                                                        <img src="/public/no-data.png" className="w-56" alt="inbox"/>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell></TableCell>
+                                                <TableCell></TableCell>
+                                            </TableRow>
+                                            <TableRow>
+                                                <TableCell></TableCell>
+                                                <TableCell></TableCell>
+                                                <TableCell>
+                                                    <div className="flex justify-center items-center gap-4">
+                                                        <p className="text-center text-lg">
+                                                            No Files!
+                                                        </p>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell></TableCell>
+                                                <TableCell></TableCell>
+                                            </TableRow>
                                         </>
-                                    )}
+                                    )) : (
+                                    <>
+                                        {[...Array(5)].map((_, index) => (
+                                            <TableRow key={index}>
+                                                <TableCell><Skeleton className="h-4 w-[50px]"/></TableCell>
+                                                <TableCell><Skeleton className="h-4 w-[150px]"/></TableCell>
+                                                <TableCell><Skeleton className="h-4 w-[50px]"/></TableCell>
+                                                <TableCell><Skeleton className="h-4 w-[80px]"/></TableCell>
+                                                <TableCell>
+                                                    <Skeleton className="h-4 w-[80px] float-end"/>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </>
+
+                                )}
                             </TableBody>
                         </Table>
                     </CardContent>
@@ -189,7 +239,7 @@ const DashboardSheet = (props: { navigateTo: () => void }) => {
                                 sentBy: { fullname: string, email: string },
                                 file: { title: string }
                             }) => (
-                                <div className="flex items-center gap-4">
+                                <div key={row._id} className="flex items-center gap-4">
                                     <Avatar className="h-9 w-9">
                                         <AvatarImage src="/avatars/01.png" alt="Avatar"/>
                                         <AvatarFallback>{row.sentBy.fullname.slice(0, 2).toUpperCase()}</AvatarFallback>
@@ -204,12 +254,17 @@ const DashboardSheet = (props: { navigateTo: () => void }) => {
                                     </div>
                                 </div>
                             ))) : (
-                                <div className="flex justify-center items-center gap-4">
-                                    <img src="/public/inbox.png" className="w-56" alt="inbox"/>
-                                </div>
+                                <>
+                                    <div className="flex justify-center items-center gap-4">
+                                        <img src="/public/inbox.png" className="w-56" alt="inbox"/>
+                                    </div>
+                                    <p className="text-center text-lg">
+                                        No Emails!
+                                    </p>
+                                </>
                             )) : (
                             [...Array(5)].map((_, index) => (
-                                <div key={index} className="flex items-center gap-4">
+                                    <div key={index} className="flex items-center gap-4">
                                         <Skeleton className="h-9 w-9 rounded-full"/>
                                         <div className="grid gap-1">
                                             <p className="text-sm font-medium leading-none">
@@ -226,7 +281,8 @@ const DashboardSheet = (props: { navigateTo: () => void }) => {
                 </Card>
             </div>
         </>
-    );
+    )
+        ;
 };
 
 export default DashboardSheet;
