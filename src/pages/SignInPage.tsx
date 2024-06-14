@@ -16,6 +16,7 @@ import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs.tsx
 import {useNavigate} from "react-router-dom";
 import {authenticate} from "@/utils/authenticate.ts";
 import LoadingOverlay from "@/components/LoadingOverlay.tsx";
+import {BASE_URL} from "@/config.ts";
 
 const formSchema = z.object({
     email: z.string().email({message: "Enter a valid email!"}),
@@ -32,9 +33,9 @@ const SignInPage = () => {
             email: "",
             password: "",
         },
-    })
-
-    const baseUrl = import.meta.env.PORT || "https://file-server-zr8t.onrender.com";
+    
+    });
+    
     const {toast} = useToast();
     const [showPassword, setShowPassword] = useState(false);
     const [signInMethod, setSignInMethod] = useState("admin");
@@ -61,7 +62,7 @@ const SignInPage = () => {
 
         const options = {
             method: 'POST',
-            url: `${baseUrl}/${signInMethod}/login`,
+            url: `${BASE_URL}/${signInMethod}/login`,
             headers: {'Content-Type': 'application/json'},
             data: {
                 email: values.email,

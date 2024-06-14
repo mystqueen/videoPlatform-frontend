@@ -12,11 +12,35 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/compo
 import {Input} from "@/components/ui/input.tsx";
 import FileCard from "@/components/FileCard.tsx";
 import {useState} from "react";
+import axios from "axios";
+import FileCardSkeleton from "@/components/FileCardSkeleton.tsx";
+import getIconUrl from "@/utils/icons.ts";
+import {BASE_URL} from "@/config.ts";
 
 const FilesSheet = () => {
 
     const [sizeFilter, setSizeFilter] = useState(false);
     const [dateFilter, setDateFilter] = useState(false);
+    const [files, setFiles] = useState([]);
+    const [isFilesLoaded, setIsFilesLoaded] = useState(false);
+
+    const axiosInstance = axios.create({
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'authorization': `Bearer ${sessionStorage.getItem("token")}`
+        },
+    });
+
+    const filesUrl = `${BASE_URL}/admin/files`;
+    axiosInstance.get(filesUrl).then((response) => {
+        setFiles(response.data.data);
+        setIsFilesLoaded(true);
+    }).catch(() => {
+        setIsFilesLoaded(true);
+    });
+
+
     const handleFilterClick = (filterOption: string) => {
         switch (filterOption) {
             case "size":
@@ -28,7 +52,6 @@ const FilesSheet = () => {
                 setSizeFilter(false);
                 break;
         }
-
     };
     return (
         <>
@@ -68,7 +91,7 @@ const FilesSheet = () => {
                 <CardHeader>
                     <CardTitle>Files</CardTitle>
                     <CardDescription className="justify-between items-center flex gap-2">
-                        Manage your files and view their sales performance.
+                        Manage and view your files here.
                         <div className="relative ml-auto flex-1 md:grow-0">
                             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"/>
                             <Input
@@ -81,162 +104,40 @@ const FilesSheet = () => {
                 </CardHeader>
                 <CardContent className="overflow-auto h-[400px]">
                     <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-6">
-                        <FileCard
-                            fileTitle="My Document.txt"
-                            fileIcon={<img src="/files/icons/txt.png" alt="Text File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="50 KB"
-                        />
-                        <FileCard
-                            fileTitle="Presentation.pptx"
-                            fileIcon={<img src="/files/icons/ppt.png" alt="PowerPoint File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="10.5 MB"
-                        />
-                        <FileCard
-                            fileTitle="Holiday Photo.jpg"
-                            fileIcon={<img src="/files/icons/jpg.png" alt="Image File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="2.3 MB"
-                        />
-                        <FileCard
-                            fileTitle="Invoice.pdf"
-                            fileIcon={<img src="/files/icons/pdf.png" alt="PDF File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="150 KB"
-                        />
-                        <FileCard
-                            fileTitle="Website Design.psd"
-                            fileIcon={<img src="/files/icons/psd.png" alt="Photoshop File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="87.2 MB"
-                        />
-                        <FileCard
-                            fileTitle="Weekly Report and sales report.docx"
-                            fileIcon={<img src="/files/icons/word.png" alt="Word Document"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="2.1 MB"
-                        />
-                        <FileCard
-                            fileTitle="Project Design.ai"
-                            fileIcon={<img src="/files/icons/ai.png" alt="Adobe Illustrator File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="5.8 MB"
-                        />
-                        <FileCard
-                            fileTitle="Proposal.pdf"
-                            fileIcon={<img src="/files/icons/pdf.png" alt="PDF File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="320 KB"
-                        />
-                        <FileCard
-                            fileTitle="Vacation Photo.jpg"
-                            fileIcon={<img src="/files/icons/jpg.png" alt="Image File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="3.5 MB"
-                        />
-                        <FileCard
-                            fileTitle="Presentation.pptx"
-                            fileIcon={<img src="/files/icons/ppt.png" alt="PowerPoint File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="12.1 MB"
-                        />
-                        <FileCard
-                            fileTitle="Report.docx"
-                            fileIcon={<img src="/files/icons/word.png" alt="Word Document"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="1.6 MB"
-                        />
-                        <FileCard
-                            fileTitle="Financial Data.xlsx"
-                            fileIcon={<img src="/files/icons/excel.png" alt="Excel File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="780 KB"
-                        />
-                        <FileCard
-                            fileTitle="Website HTML.html"
-                            fileIcon={<img src="/files/icons/html.png" alt="HTML File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="420 KB"
-                        />
-                        <FileCard
-                            fileTitle="Random Document.txt"
-                            fileIcon={<img src="/files/icons/txt.png" alt="Text File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="28 KB"
-                        />
-                        <FileCard
-                            fileTitle="Animation.gif"
-                            fileIcon={<img src="/files/icons/gif.png" alt="GIF File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="780 KB"
-                        />
-                        <FileCard
-                            fileTitle="Unknown File.xyz"
-                            fileIcon={<img src="/files/icons/unknown.png" alt="Unknown File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="125 KB"
-                        />
-                        <FileCard
-                            fileTitle="Project Design.ai"
-                            fileIcon={<img src="/files/icons/ai.png" alt="Adobe Illustrator File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="5.8 MB"
-                        />
-                        <FileCard
-                            fileTitle="Proposal.pdf"
-                            fileIcon={<img src="/files/icons/pdf.png" alt="PDF File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="320 KB"
-                        />
-                        <FileCard
-                            fileTitle="Vacation Photo.jpg"
-                            fileIcon={<img src="/files/icons/jpg.png" alt="Image File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="3.5 MB"
-                        />
-                        <FileCard
-                            fileTitle="Presentation.pptx"
-                            fileIcon={<img src="/files/icons/ppt.png" alt="PowerPoint File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="12.1 MB"
-                        />
-                        <FileCard
-                            fileTitle="Report.docx"
-                            fileIcon={<img src="/files/icons/word.png" alt="Word Document"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="1.6 MB"
-                        />
-                        <FileCard
-                            fileTitle="Financial Data.xlsx"
-                            fileIcon={<img src="/files/icons/excel.png" alt="Excel File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="780 KB"
-                        />
-                        <FileCard
-                            fileTitle="Website HTML.html"
-                            fileIcon={<img src="/files/icons/html.png" alt="HTML File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="420 KB"
-                        />
-                        <FileCard
-                            fileTitle="Random Document.txt"
-                            fileIcon={<img src="/files/icons/txt.png" alt="Text File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="28 KB"
-                        />
-                        <FileCard
-                            fileTitle="Animation.gif"
-                            fileIcon={<img src="/files/icons/gif.png" alt="GIF File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="780 KB"
-                        />
-                        <FileCard
-                            fileTitle="Unknown File.xyz"
-                            fileIcon={<img src="/files/icons/unknown.png" alt="Unknown File"
-                                           className="h-12 w-12 text-muted-foreground"/>}
-                            fileSize="45 MB"
-                        />
+                        {
+                            isFilesLoaded ? (
+                                (files.length > 0 ? (
+                                    files.map((row: {
+                                        _id: string,
+                                        path: string,
+                                        title: string,
+                                        fileSize: string,
+                                        createdAt: string,
+                                        description: string
+                                    }) => (
+                                        <FileCard
+                                            fileID={row._id}
+                                            key={row._id}
+                                            fileTitle={row.title}
+                                            fileIcon={<img src={getIconUrl(row.path)} alt="File Icon"
+                                                           className="h-12 w-12 text-muted-foreground"/>}
+                                            fileSize={`
+                                            ${parseFloat(row.fileSize.split(" ")[0]).toFixed(1)} 
+                                            ${row.fileSize.split(" ")[1]}`}
+                                            fileDescription={row.description}
+                                        />
+                                    ))
+                                ) : (
+                                    <div className="flex justify-center items-center gap-4">
+                                        <img src="/public/no-data.png" className="w-56" alt="inbox"/>
+                                    </div>
+                                ))) : (
+                                [...Array(12)].map((_, index) => (
+                                    <FileCardSkeleton key={index}/>
+                                ))
+                            )
+                        }
+
 
                     </div>
                 </CardContent>

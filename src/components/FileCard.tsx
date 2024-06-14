@@ -1,5 +1,5 @@
 import {Card, CardContent, CardHeader} from "@/components/ui/card.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -11,7 +11,6 @@ import {MoreHorizontal} from "lucide-react";
 import {Button} from "@/components/ui/button.tsx";
 import {
     Dialog,
-    DialogClose,
     DialogContent,
     DialogDescription,
     DialogFooter,
@@ -19,39 +18,98 @@ import {
     DialogTitle,
     DialogTrigger
 } from "@/components/ui/dialog.tsx";
-import {Label} from "@/components/ui/label.tsx";
 import {Input} from "@/components/ui/input.tsx";
+import {Textarea} from "@/components/ui/textarea.tsx";
+import {z} from "zod";
+import {FormProvider, useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form.tsx";
+import {useToast} from "@/components/ui/use-toast.ts";
+import axios from "axios";
+import {BASE_URL} from "@/config.ts";
 
-const FileCard = (props: { fileTitle: string, fileSize: string, fileIcon: React.ReactNode, fileDescription?: string }) => {
-    const {fileTitle, fileSize, fileIcon, fileDescription} = props;
+const formSchema = z.object({
+    title: z.string().min(1, {message: "Title is required!"}),
+    description: z.string().min(1, {message: "Please enter a description!"}),
+});
 
-    const [_fileTitle, setFileTitle] = useState(fileTitle);
-    const [_fileDescription, setFileDescription] = useState(fileDescription || "");
+const FileCard = (props: {
+    fileID: string,
+    fileTitle: string,
+    fileSize: string,
+    fileIcon: React.ReactNode,
+    fileDescription?: string
+}) => {
+    const {fileID, fileTitle, fileSize, fileIcon, fileDescription} = props;
+
+    const [isDisabled, setIsDisabled] = useState(true);
+    const {toast} = useToast();
+
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            title: fileTitle,
+            description: fileDescription || "",
+        },
+    });
 
     const truncateFileName = (name: string, maxLength: number) => {
         if (name.length <= maxLength) return name;
         return name.substring(0, maxLength) + '...';
     };
 
+    const {reset, watch, formState} = form;
+    const {isDirty, dirtyFields} = formState;
+
+    useEffect(() => {
+        reset({title: fileTitle, description: fileDescription || ""});
+    }, [fileTitle, fileDescription, reset]);
+
+    const axiosInstance = axios.create({
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'authorization': `Bearer ${sessionStorage.getItem("token")}`
+        },
+    });
+    const handleView = () => {
+        setIsDisabled(true);
+    };
 
     const handleEdit = () => {
-        setFileTitle(_fileTitle);
-        setFileDescription(_fileDescription);
-    }; // TODO: handleEdit
-
+        setIsDisabled(!isDisabled);
+    };
 
     const handleSave = () => {
-        alert(`Title: ${_fileTitle }\nDescription:  ${_fileDescription}`);
-    }; // TODO: handleSave
+        if (isDirty) {
+            const updatedData = {
+                title: dirtyFields.title ? watch("title") : fileTitle,
+                description: dirtyFields.description ? watch("description") : fileDescription,
+            };
+            alert(`Title: ${updatedData.title}\nDescription:  ${updatedData.description}`);
+            setIsDisabled(true);
+        } else {
+            toast({description: "No changes made!"});
+        }
+    };
 
-    
     const handleDelete = (fileData: object) => {
         console.log(`deleting ${JSON.stringify(fileData)}`);
-    }; // TODO: handleEdit
+    };
 
     const handleDownload = (fileData: object) => {
+        axiosInstance.get(`${BASE_URL}/file/download/request/${fileID}`).then(() => {
+            toast({
+                description: "Download initiated!"
+            });
+        }).catch(() => {
+            toast({
+                description: "An error occurred!",
+                variant: "destructive"
+            })
+        })
         console.log(`downloading ${JSON.stringify(fileData)}`);
-    }; // TODO: handleEdit
+    };
 
     return (
         <Card x-chunk="dashboard-01-chunk-0" className="hover:bg-gray-50 cursor-pointer relative">
@@ -71,8 +129,8 @@ const FileCard = (props: { fileTitle: string, fileSize: string, fileIcon: React.
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DialogTrigger asChild>
-                                <DropdownMenuItem onClick={handleEdit}>
-                                    Edit
+                                <DropdownMenuItem onClick={handleView}>
+                                    View
                                 </DropdownMenuItem>
                             </DialogTrigger>
                             <DropdownMenuItem onClick={() => handleDelete(props)}>Delete</DropdownMenuItem>
@@ -80,43 +138,67 @@ const FileCard = (props: { fileTitle: string, fileSize: string, fileIcon: React.
                         </DropdownMenuContent>
                     </DropdownMenu>
                     <DialogContent className="sm:max-w-md">
-                        <DialogHeader>
-                            <DialogTitle>Edit File</DialogTitle>
-                            <DialogDescription>
-                               Edit and update the file.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="flex items-center space-x-2">
-                            <div className="grid flex-1 gap-2">
-                                <Label htmlFor="title" >
-                                    Title
-                                </Label>
-                                <Input
-                                    id="title"
-                                    defaultValue={_fileTitle}
-                                    onChange={(e) => setFileTitle(e.target.value)}
-                                />
-                                <Label htmlFor="description" >
-                                    Description
-                                </Label>
-                                <Input
-                                    id="description"
-                                    defaultValue={_fileDescription}
-                                    onChange={(e) => setFileDescription(e.target.value)}
-                                />
-                            </div>
+                        <FormProvider {...form}>
+                            <form
+                                onSubmit={form.handleSubmit(handleSave)}>
+                                <DialogHeader>
+                                    <DialogTitle>Edit File</DialogTitle>
+                                    <DialogDescription>
+                                        Edit and update the file.
+                                    </DialogDescription>
+                                </DialogHeader>
 
-                        </div>
-                        <DialogFooter className="sm:justify-start">
-                            <DialogClose asChild>
-                                <Button type="button" variant="secondary">
-                                    Close
-                                </Button>
-                            </DialogClose>
-                            <Button onClick={handleSave} className="px-3">
-                            Save
-                        </Button>
-                        </DialogFooter>
+                                <FormField
+                                    control={form.control}
+                                    name="title"
+                                    render={({field}) => (
+                                        <FormItem>
+                                            <FormLabel>Title</FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="text"
+                                                    placeholder="title"
+                                                    disabled={isDisabled}
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormDescription>
+                                            </FormDescription>
+                                            <FormMessage/>
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="description"
+                                    render={({field}) => (
+                                        <FormItem>
+                                            <FormLabel>Description</FormLabel>
+                                            <FormControl>
+                                                <Textarea
+                                                    placeholder="description"
+                                                    disabled={isDisabled}
+                                                    rows={4}
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormDescription>
+                                            </FormDescription>
+                                            <FormMessage/>
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <DialogFooter className="sm:justify-start">
+                                    <Button type="button" onClick={handleEdit} variant="ghost">
+                                        {isDisabled ? "Edit" : "Cancel"}
+                                    </Button>
+                                    <Button type="submit" className="px-3">
+                                        Save
+                                    </Button>
+                                </DialogFooter>
+                            </form>
+                        </FormProvider>
                     </DialogContent>
                 </Dialog>
             </div>
@@ -130,7 +212,6 @@ const FileCard = (props: { fileTitle: string, fileSize: string, fileIcon: React.
                 </p>
             </CardContent>
         </Card>
-
     );
 };
 

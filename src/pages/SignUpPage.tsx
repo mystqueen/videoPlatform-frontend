@@ -16,6 +16,7 @@ import axios from 'axios';
 import {useNavigate} from "react-router-dom";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs.tsx";
 import {authenticate} from "@/utils/authenticate.ts";
+import {BASE_URL} from "@/config.ts";
 
 const formSchema = z.object({
     fullname: z.string().min(5, {message: "Enter a your name!"}),
@@ -43,9 +44,8 @@ const SignUpPage = () => {
             password: "",
             confirm: ""
         },
-    })
+    });
 
-    const baseUrl = import.meta.env.PORT || "https://file-server-zr8t.onrender.com";
     const {toast} = useToast();
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
@@ -67,10 +67,9 @@ const SignUpPage = () => {
             action: <Loader2 className="mr-2 h-4 w-4 animate-spin"/>,
         });
 
-
         const options = {
             method: 'POST',
-            url: `${baseUrl}/${signInMethod}/register`,
+            url: `${BASE_URL}/${signInMethod}/register`,
             headers: {'Content-Type': 'application/json'},
             data: {
                 fullname: values.fullname,

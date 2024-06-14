@@ -9,6 +9,7 @@ import {useState} from "react";
 import axios from "axios";
 import {Skeleton} from "@/components/ui/skeleton.tsx";
 import getIconUrl from "@/utils/icons.ts";
+import {BASE_URL} from "@/config.ts";
 
 const DashboardSheet = (props: { navigateTo: () => void }) => {
 
@@ -25,15 +26,14 @@ const DashboardSheet = (props: { navigateTo: () => void }) => {
     const [loadedRecentFiles, setLoadedRecentFiles] = useState(false);
     const [loadedEmailCount, setLoadedEmailCount] = useState(false);
     const {navigateTo} = props;
-    // const baseUrl = import.meta.env.PORT || "http://testserver.com:8080";
-    const baseUrl = import.meta.env.PORT || "https://file-server-zr8t.onrender.com";
 
-    const downloadsCountUrl = `${baseUrl}/admin/downloads/count`;
-    const filesCountUrl = `${baseUrl}/admin/files/count`;
-    const emailsCountUrl = `${baseUrl}/admin/emails/count`;
-    const usersCountUrl = `${baseUrl}/admin/users/count`;
-    const recentFilesUrl = `${baseUrl}/admin/files/recent`;
-    const recentEmailsUrl = `${baseUrl}/admin/emails/recent`;
+    console.log(BASE_URL)
+    const downloadsCountUrl = `${BASE_URL}/admin/downloads/count`;
+    const filesCountUrl = `${BASE_URL}/admin/files/count`;
+    const emailsCountUrl = `${BASE_URL}/admin/emails/count`;
+    const usersCountUrl = `${BASE_URL}/admin/users/count`;
+    const recentFilesUrl = `${BASE_URL}/admin/files/recent`;
+    const recentEmailsUrl = `${BASE_URL}/admin/emails/recent`;
 
     const axiosInstance = axios.create({
         method: 'GET',
@@ -43,6 +43,7 @@ const DashboardSheet = (props: { navigateTo: () => void }) => {
         },
     });
 
+    console.log(import.meta.env.VITE_ENVIROMENT)
     axiosInstance.get(downloadsCountUrl).then((response) => {
         if (response.status === 200) {
             setTotalFilesDownloads(response.data.data.count);
