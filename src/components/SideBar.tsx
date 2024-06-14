@@ -20,7 +20,7 @@ const SideBar = (props: { handleActiveItem?: (itemId: string) => void }) => {
                     className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full border-4 border-primary-foreground bg-primary-foreground
                     text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
                 >
-                    <img src="/public/icon.png" width="36"/>
+                    <img src="/icon.png" width="36"/>
                     <span className="sr-only">File Server</span>
                 </Link>
                 <TooltipProvider>

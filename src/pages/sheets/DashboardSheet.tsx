@@ -1,113 +1,99 @@
-import ChunkCard from "@/components/ChunkCard.tsx";
-import {ArrowUpRight, FileDown, FileUp, User} from "lucide-react";
-import {MdAlternateEmail} from "react-icons/md";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card.tsx";
-import {Button} from "@/components/ui/button.tsx";
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table.tsx";
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
-import {useState} from "react";
-import axios from "axios";
-import {Skeleton} from "@/components/ui/skeleton.tsx";
-import getIconUrl from "@/utils/icons.ts";
-import {BASE_URL} from "@/config.ts";
+import React, {useEffect, useState} from 'react';
+import axios from 'axios';
+import {ArrowUpRight, FileDown, FileUp, User} from 'lucide-react';
+import {MdAlternateEmail} from 'react-icons/md';
+import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from '@/components/ui/avatar';
+import {Button} from '@/components/ui/button';
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
+import ChunkCard from '@/components/ChunkCard';
+import {Skeleton} from '@/components/ui/skeleton';
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table';
+import getIconUrl from '@/utils/icons';
+import {BASE_URL} from '@/config';
 
-const DashboardSheet = (props: { navigateTo: () => void }) => {
-
-    const [totalFiles, setTotalFiles] = useState("0");
-    const [totalFilesDownloads, setTotalFilesDownloads] = useState("0");
-    const [totalEmailsSent, setTotalEmailsSent] = useState("0");
-    const [usersCount, setUsersCount] = useState("0");
-    const [recentFiles, setRecentFiles] = useState([]);
-    const [recentEmails, setRecentEmails] = useState([]);
-    const [loadedRecentEmails, setLoadedRecentEmails] = useState(false);
-    const [loadedTotalFiles, setLoadedTotalFiles] = useState(false);
-    const [loadedTotalFilesDownloads, setLoadedTotalFilesDownloads] = useState(false);
-    const [loadedUserCount, setLoadedUserCount] = useState(false);
-    const [loadedRecentFiles, setLoadedRecentFiles] = useState(false);
-    const [loadedEmailCount, setLoadedEmailCount] = useState(false);
-    const {navigateTo} = props;
-
-    console.log(BASE_URL)
-    const downloadsCountUrl = `${BASE_URL}/admin/downloads/count`;
-    const filesCountUrl = `${BASE_URL}/admin/files/count`;
-    const emailsCountUrl = `${BASE_URL}/admin/emails/count`;
-    const usersCountUrl = `${BASE_URL}/admin/users/count`;
-    const recentFilesUrl = `${BASE_URL}/admin/files/recent`;
-    const recentEmailsUrl = `${BASE_URL}/admin/emails/recent`;
-
-    const axiosInstance = axios.create({
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'authorization': `Bearer ${sessionStorage.getItem("token")}`
-        },
+const DashboardSheet: React.FC<{ navigateTo: () => void }> = ({navigateTo}) => {
+    const [data, setData] = useState({
+        totalFiles: "0",
+        totalFilesDownloads: "0",
+        totalEmailsSent: "0",
+        usersCount: "0",
+        recentFiles: [],
+        recentEmails: [],
+        loadedRecentEmails: false,
+        loadedTotalFiles: false,
+        loadedTotalFilesDownloads: false,
+        loadedUserCount: false,
+        loadedRecentFiles: false,
+        loadedEmailCount: false,
     });
 
-    console.log(import.meta.env.VITE_ENVIROMENT)
-    axiosInstance.get(downloadsCountUrl).then((response) => {
-        if (response.status === 200) {
-            setTotalFilesDownloads(response.data.data.count);
-        } else {
-            console.log("downloads count error:", response.data.error);
+    const fetchData = async () => {
+        const axiosInstance = axios.create({
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': `Bearer ${sessionStorage.getItem("token")}`
+            },
+        });
+
+        try {
+            const [
+                downloadsCountRes,
+                filesCountRes,
+                emailsCountRes,
+                usersCountRes,
+                recentFilesRes,
+                recentEmailsRes
+            ] = await Promise.all([
+                axiosInstance.get(`${BASE_URL}/admin/downloads/count`),
+                axiosInstance.get(`${BASE_URL}/admin/files/count`),
+                axiosInstance.get(`${BASE_URL}/admin/emails/count`),
+                axiosInstance.get(`${BASE_URL}/admin/users/count`),
+                axiosInstance.get(`${BASE_URL}/admin/files/recent`),
+                axiosInstance.get(`${BASE_URL}/admin/emails/recent`)
+            ]);
+
+            setData({
+                totalFilesDownloads: downloadsCountRes.data.data.count,
+                totalFiles: filesCountRes.data.data.count,
+                totalEmailsSent: emailsCountRes.data.data.count,
+                usersCount: usersCountRes.data.data.count,
+                recentFiles: recentFilesRes.data.data,
+                recentEmails: recentEmailsRes.data.data,
+                loadedRecentEmails: true,
+                loadedTotalFiles: true,
+                loadedTotalFilesDownloads: true,
+                loadedUserCount: true,
+                loadedRecentFiles: true,
+                loadedEmailCount: true
+            });
+        } catch (error) {
+            console.log('Error fetching data:', error);
         }
-    }).catch(() => {
-        setLoadedTotalFilesDownloads(true);
-    });
+    };
 
-    axiosInstance.get(filesCountUrl).then((response) => {
-        if (response.status === 200) {
-            setTotalFiles(response.data.data.count);
-            setLoadedTotalFiles(true);
-        } else {
-            console.log("files count error:", response.data.error);
-        }
-    }).catch(() => {
-        setLoadedTotalFiles(true);
-    });
+    useEffect(() => {
+        fetchData();
+    }, []);
 
-    axiosInstance.get(emailsCountUrl).then((response) => {
-        if (response.status === 200) {
-            setTotalEmailsSent(response.data.data.count);
-            setLoadedEmailCount(true);
-        } else {
-            console.log("emails count error:", response.data.error);
-        }
-    }).catch(() => {
-        setLoadedEmailCount(true);
-    });
-
-    axiosInstance.get(usersCountUrl).then((response) => {
-        if (response.status === 200) {
-            setUsersCount(response.data.data.count);
-            setLoadedUserCount(true);
-        } else {
-            console.log("most downloaded file error:", response.data.error);
-        }
-    }).catch(() => {
-        setLoadedUserCount(true);
-    });
-
-    axiosInstance.get(recentFilesUrl).then((response) => {
-        if (response.status === 200) {
-            setRecentFiles(response.data.data);
-            setLoadedRecentFiles(true);
-        } else {
-            console.log("recent files error:", response.data.error);
-        }
-    }).catch(() => {
-        setLoadedRecentFiles(true);
-    });
-
-    axiosInstance.get(recentEmailsUrl).then((response) => {
-        if (response.status === 200) {
-            setRecentEmails(response.data.data);
-            setLoadedRecentEmails(true);
-        } else {
-            console.log("recent emails error:", response.data.error);
-        }
-    }).catch(() => {
-        setLoadedRecentEmails(true);
-    });
+    const {
+        totalFiles,
+        totalFilesDownloads,
+        totalEmailsSent,
+        usersCount,
+        recentFiles,
+        recentEmails,
+        loadedRecentEmails,
+        loadedTotalFiles,
+        loadedTotalFilesDownloads,
+        loadedUserCount,
+        loadedRecentFiles,
+        loadedEmailCount,
+    } = data;
 
     return (
         <>
@@ -116,33 +102,33 @@ const DashboardSheet = (props: { navigateTo: () => void }) => {
                     cardTitle="Total Files Uploaded"
                     cardContent={totalFiles.toLocaleString()}
                     cardIcon={<FileUp className="h-6 w-6 text-muted-foreground"/>}
-                    isLoaded={loadedTotalFiles}/>
+                    isLoaded={loadedTotalFiles}
+                />
                 <ChunkCard
                     cardTitle="Total File Downloads"
                     cardContent={totalFilesDownloads.toLocaleString()}
                     cardIcon={<FileDown className="h-6 w-6 text-muted-foreground"/>}
-                    isLoaded={loadedTotalFilesDownloads}/>
+                    isLoaded={loadedTotalFilesDownloads}
+                />
                 <ChunkCard
                     cardTitle="Total Emails Sent"
                     cardContent={totalEmailsSent.toLocaleString()}
                     cardIcon={<MdAlternateEmail className="h-6 w-6 text-muted-foreground"/>}
-                    isLoaded={loadedEmailCount}/>
+                    isLoaded={loadedEmailCount}
+                />
                 <ChunkCard
                     cardTitle="Total Users"
                     cardContent={usersCount.toLocaleString()}
                     cardIcon={<User className="h-6 w-6 text-muted-foreground"/>}
-                    isLoaded={loadedUserCount}/>
+                    isLoaded={loadedUserCount}
+                />
             </div>
             <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
-                <Card
-                    className="xl:col-span-2" x-chunk="dashboard-01-chunk-4"
-                >
+                <Card className="xl:col-span-2">
                     <CardHeader className="flex flex-row items-center">
                         <div className="grid gap-2">
                             <CardTitle>Recent Files</CardTitle>
-                            <CardDescription>
-                                Recent uploaded files.
-                            </CardDescription>
+                            <CardDescription>Recent uploaded files.</CardDescription>
                         </div>
                         <Button asChild size="sm" onClick={navigateTo} className="ml-auto gap-1">
                             <div className="cursor-pointer">
@@ -156,134 +142,112 @@ const DashboardSheet = (props: { navigateTo: () => void }) => {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>File Type</TableHead>
-                                    <TableHead className="">Title</TableHead>
-                                    <TableHead className="">Size</TableHead>
-                                    <TableHead className="">Date</TableHead>
+                                    <TableHead>Title</TableHead>
+                                    <TableHead>Size</TableHead>
+                                    <TableHead>Date</TableHead>
                                     <TableHead className="text-right">Uploaded by</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {loadedRecentFiles ? (recentFiles.length > 0 ?
-                                    (recentFiles.map((row: {
-                                        _id: string,
-                                        path: string,
-                                        title: string,
-                                        fileSize: string,
-                                        createdAt: string,
-                                        uploadedBy: { fullname: string }
-                                    }) => (
-                                        <TableRow key={row._id}>
-                                            <TableCell dangerouslySetInnerHTML={{
-                                                __html: `<img src=${getIconUrl(row.path)} class="h-8" alt="Avatar"/>`
-                                            }}/>
-                                            <TableCell className="">{row.title}</TableCell>
-                                            <TableCell className="">{row.fileSize}</TableCell>
-                                            <TableCell className="">{new Date(row.createdAt).toDateString()}</TableCell>
-                                            <TableCell className="text-right">{row.uploadedBy.fullname}</TableCell>
-                                        </TableRow>
-                                    ))) : (
+                                {loadedRecentFiles ? (
+                                    recentFiles.length > 0 ? (
+                                        recentFiles.map((row: {
+                                            _id: string,
+                                            title: string,
+                                            path: string,
+                                            fileSize: string,
+                                            createdAt: string,
+                                            uploadedBy: { fullname: string }
+                                        }) => (
+                                            <TableRow key={row._id}>
+                                                <TableCell dangerouslySetInnerHTML={{
+                                                    __html: `<img src=${getIconUrl(row.path)} class="h-8" alt="Avatar"/>`
+                                                }}/>
+                                                <TableCell>{row.title}</TableCell>
+                                                <TableCell>{row.fileSize}</TableCell>
+                                                <TableCell>{new Date(row.createdAt).toDateString()}</TableCell>
+                                                <TableCell className="text-right">{row.uploadedBy.fullname}</TableCell>
+                                            </TableRow>
+                                        ))
+                                    ) : (
                                         <>
                                             <TableRow>
-                                                <TableCell></TableCell>
-                                                <TableCell></TableCell>
-                                                <TableCell>
-                                                    <div className="flex justify-center items-center gap-4">
-                                                        <img src="/public/no-data.png" className="w-56" alt="inbox"/>
-                                                    </div>
+                                                <TableCell colSpan={5} className="text-center">
+                                                    <img src="/public/no-data.png" className="w-56 mx-auto"
+                                                         alt="inbox"/>
+                                                    <p className="text-lg">No Files!</p>
                                                 </TableCell>
-                                                <TableCell></TableCell>
-                                                <TableCell></TableCell>
-                                            </TableRow>
-                                            <TableRow>
-                                                <TableCell></TableCell>
-                                                <TableCell></TableCell>
-                                                <TableCell>
-                                                    <div className="flex justify-center items-center gap-4">
-                                                        <p className="text-center text-lg">
-                                                            No Files!
-                                                        </p>
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell></TableCell>
-                                                <TableCell></TableCell>
                                             </TableRow>
                                         </>
-                                    )) : (
-                                    <>
-                                        {[...Array(5)].map((_, index) => (
-                                            <TableRow key={index}>
-                                                <TableCell><Skeleton className="h-4 w-[50px]"/></TableCell>
-                                                <TableCell><Skeleton className="h-4 w-[150px]"/></TableCell>
-                                                <TableCell><Skeleton className="h-4 w-[50px]"/></TableCell>
-                                                <TableCell><Skeleton className="h-4 w-[80px]"/></TableCell>
-                                                <TableCell>
-                                                    <Skeleton className="h-4 w-[80px] float-end"/>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </>
-
+                                    )
+                                ) : (
+                                    [...Array(5)].map((_, index) => (
+                                        <TableRow key={index}>
+                                            <TableCell><Skeleton className="h-4 w-[50px]"/></TableCell>
+                                            <TableCell><Skeleton className="h-4 w-[150px]"/></TableCell>
+                                            <TableCell><Skeleton className="h-4 w-[50px]"/></TableCell>
+                                            <TableCell><Skeleton className="h-4 w-[80px]"/></TableCell>
+                                            <TableCell><Skeleton className="h-4 w-[80px] float-end"/></TableCell>
+                                        </TableRow>
+                                    ))
                                 )}
                             </TableBody>
                         </Table>
                     </CardContent>
                 </Card>
-                <Card x-chunk="dashboard-01-chunk-5">
+                <Card>
                     <CardHeader>
                         <CardTitle>Recent Emails</CardTitle>
                     </CardHeader>
                     <CardContent className="grid gap-8">
-                        {loadedRecentEmails ? (recentEmails.length > 0 ?
-                            (recentEmails.map((row: {
-                                _id: string,
-                                subject: string,
-                                sentBy: { fullname: string, email: string },
-                                file: { title: string }
-                            }) => (
-                                <div key={row._id} className="flex items-center gap-4">
-                                    <Avatar className="h-9 w-9">
-                                        <AvatarImage src="/avatars/01.png" alt="Avatar"/>
-                                        <AvatarFallback>{row.sentBy.fullname.slice(0, 2).toUpperCase()}</AvatarFallback>
-                                    </Avatar>
-                                    <div className="grid gap-1">
-                                        <p className="text-sm font-medium leading-none">
-                                            {row.subject}
-                                        </p>
-                                        <p className="text-sm text-muted-foreground">
-                                            {row.sentBy.fullname} ({row.sentBy.email})
-                                        </p>
+                        {loadedRecentEmails ? (
+                            recentEmails.length > 0 ? (
+                                recentEmails.map((row: {
+                                    _id: string,
+                                    subject: string,
+                                    sentBy: { fullname: string, email: string }
+                                }) => (
+                                    <div key={row._id} className="flex items-center gap-4">
+                                        <Avatar className="h-9 w-9">
+                                            <AvatarImage src="/avatars/01.png" alt="Avatar"/>
+                                            <AvatarFallback>{row.sentBy.fullname.slice(0, 2).toUpperCase()}</AvatarFallback>
+                                        </Avatar>
+                                        <div className="grid gap-1">
+                                            <p className="text-sm font-medium leading-none">{row.subject}</p>
+                                            <p className="text-sm text-muted-foreground">
+                                                {row.sentBy.fullname} ({row.sentBy.email})
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
-                            ))) : (
+                                ))
+                            ) : (
                                 <>
                                     <div className="flex justify-center items-center gap-4">
                                         <img src="/public/inbox.png" className="w-56" alt="inbox"/>
                                     </div>
-                                    <p className="text-center text-lg">
-                                        No Emails!
-                                    </p>
+                                    <p className="text-center text-lg">No Emails!</p>
                                 </>
-                            )) : (
+                            )
+                        ) : (
                             [...Array(5)].map((_, index) => (
-                                    <div key={index} className="flex items-center gap-4">
-                                        <Skeleton className="h-9 w-9 rounded-full"/>
-                                        <div className="grid gap-1">
-                                            <p className="text-sm font-medium leading-none">
-                                                <Skeleton className="h-6 w-[150px]"/>
-                                            </p>
-                                            <p className="text-sm text-muted-foreground">
-                                                <Skeleton className="h-5 w-[250px]"/>
-                                            </p>
-                                        </div>
+                                <div key={index} className="flex items-center gap-4">
+                                    <Skeleton className="h-9 w-9 rounded-full"/>
+                                    <div className="grid gap-1">
+                                        <p className="text-sm font-medium leading-none">
+                                            <Skeleton className="h-6 w-[150px]"/>
+                                        </p>
+                                        <p className="text-sm text-muted-foreground">
+                                            <Skeleton className="h-5 w-[250px]"/>
+                                        </p>
                                     </div>
-                                )
-                            ))}
+                                </div>
+                            ))
+                        )}
                     </CardContent>
                 </Card>
             </div>
         </>
-    )
-        ;
+    );
 };
 
 export default DashboardSheet;
