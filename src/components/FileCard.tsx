@@ -27,6 +27,7 @@ import {FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessag
 import {useToast} from "@/components/ui/use-toast.ts";
 import axios from "axios";
 import {BASE_URL} from "@/config.ts";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip.tsx";
 
 const formSchema = z.object({
     title: z.string().min(1, {message: "Title is required!"}),
@@ -63,12 +64,22 @@ const FileCard = (props: {
     const {reset, watch, formState} = form;
     const {isDirty, dirtyFields} = formState;
 
+    const [fileCardTitle, setFileCardTitle] = useState(fileTitle);
     useEffect(() => {
         reset({title: fileTitle, description: fileDescription || ""});
+        setFileCardTitle(fileTitle);
     }, [fileTitle, fileDescription, reset]);
 
     const axiosDeleteInstance = axios.create({
         method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+    });
+
+    const axiosUpdateInstance = axios.create({
+        method: "PATCH",
         headers: {
             "Content-Type": "application/json",
             authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -84,13 +95,25 @@ const FileCard = (props: {
         setIsDisabled(!isDisabled);
     };
 
-    const handleSave = () => {
+    const handleSave = (fileID: string ) => {
         if (isDirty) {
             const updatedData = {
                 title: dirtyFields.title ? watch("title") : fileTitle,
                 description: dirtyFields.description ? watch("description") : fileDescription,
             };
-            alert(`Title: ${updatedData.title}\nDescription:  ${updatedData.description}`);
+            axiosUpdateInstance.patch(`${BASE_URL}/admin/file/update/${fileID}`, updatedData).
+            then(response => {
+                if (response.status === 200) {
+
+                    toast({description: "File updated successfully!"});
+                    setFileCardTitle(updatedData.title);
+                } else {
+                    toast({
+                        description: response.data.error,
+                        variant: "destructive"
+                    });
+                }
+            })
             setIsDisabled(true);
         } else {
             toast({description: "No changes made!"});
@@ -148,7 +171,7 @@ const FileCard = (props: {
                     </DropdownMenu>
                     <DialogContent className="sm:max-w-md">
                         <FormProvider {...form}>
-                            <form onSubmit={form.handleSubmit(handleSave)}>
+                            <form onSubmit={form.handleSubmit(() => handleSave(fileID))}>
                                 <DialogHeader>
                                     <DialogTitle>Edit File</DialogTitle>
                                     <DialogDescription>Edit and update the file.</DialogDescription>
@@ -179,13 +202,12 @@ const FileCard = (props: {
                                                 <Textarea placeholder="description" disabled={isDisabled}
                                                           rows={4} {...field} />
                                             </FormControl>
-                                            <FormDescription></FormDescription>
                                             <FormMessage/>
                                         </FormItem>
                                     )}
                                 />
 
-                                <DialogFooter className="sm:justify-start">
+                                <DialogFooter className="sm:justify-start mt-5">
                                     <Button type="button" onClick={handleEdit} variant="ghost">
                                         {isDisabled ? "Edit" : "Cancel"}
                                     </Button>
@@ -204,7 +226,17 @@ const FileCard = (props: {
                 {fileIcon}
             </CardHeader>
             <CardContent className="flex flex-col items-center justify-center">
-                <div className="truncate">{truncateFileName(fileTitle, 15)}</div>
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <div className="truncate">{truncateFileName(fileCardTitle, 15)}</div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{fileCardTitle}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+
                 <p className="text-xs justify-between gap-2 text-muted-foreground">{fileSize} ● {new Date(createdAt).toDateString()}</p>
             </CardContent>
         </Card>
