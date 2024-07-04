@@ -2,11 +2,7 @@ import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {ArrowUpRight, FileDown, FileUp, User} from 'lucide-react';
 import {MdAlternateEmail} from 'react-icons/md';
-import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-} from '@/components/ui/avatar';
+import {Avatar, AvatarFallback, AvatarImage,} from '@/components/ui/avatar';
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card';
 import ChunkCard from '@/components/ChunkCard';
@@ -15,7 +11,7 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/c
 import getIconUrl from '@/utils/icons';
 import {BASE_URL} from '@/config';
 
-const DashboardSheet: React.FC<{ navigateTo: () => void }> = ({navigateTo}) => {
+const DashboardSheet: React.FC<{ navigateTo: (page: string) => void }> = ({navigateTo}) => {
     const [data, setData] = useState({
         totalFiles: "0",
         totalFilesDownloads: "0",
@@ -77,7 +73,7 @@ const DashboardSheet: React.FC<{ navigateTo: () => void }> = ({navigateTo}) => {
     };
 
     useEffect(() => {
-        fetchData();
+        fetchData().then();
     }, []);
 
     const {
@@ -130,7 +126,7 @@ const DashboardSheet: React.FC<{ navigateTo: () => void }> = ({navigateTo}) => {
                             <CardTitle>Recent Files</CardTitle>
                             <CardDescription>Recent uploaded files.</CardDescription>
                         </div>
-                        <Button asChild size="sm" onClick={navigateTo} className="ml-auto gap-1">
+                        <Button asChild size="sm" onClick={() => navigateTo("files")} className="ml-auto gap-1">
                             <div className="cursor-pointer">
                                 View All
                                 <ArrowUpRight className="h-4 w-4"/>
@@ -173,7 +169,7 @@ const DashboardSheet: React.FC<{ navigateTo: () => void }> = ({navigateTo}) => {
                                         <>
                                             <TableRow>
                                                 <TableCell colSpan={5} className="text-center">
-                                                    <img src="/public/no-data.png" className="w-56 mx-auto"
+                                                    <img src="/no-data.png" className="w-56 mx-auto"
                                                          alt="inbox"/>
                                                     <p className="text-lg">No Files!</p>
                                                 </TableCell>
@@ -223,7 +219,7 @@ const DashboardSheet: React.FC<{ navigateTo: () => void }> = ({navigateTo}) => {
                             ) : (
                                 <>
                                     <div className="flex justify-center items-center gap-4">
-                                        <img src="/public/inbox.png" className="w-56" alt="inbox"/>
+                                        <img src="/inbox.png" className="w-56" alt="inbox"/>
                                     </div>
                                     <p className="text-center text-lg">No Emails!</p>
                                 </>

@@ -13,7 +13,7 @@ import {
 import {useEffect, useState} from "react";
 import {Link, useNavigate} from "react-router-dom";
 
-const Header = (props: { pageTitle ?: string }) => {
+const Header = (props: { pageTitle?: string }) => {
     const [username, setUsername] = useState<string>("");
     const navigate = useNavigate();
     const pageTitle = props.pageTitle;

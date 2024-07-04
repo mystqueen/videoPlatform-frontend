@@ -3,7 +3,7 @@ type LoadingOverlayProps = {
     message?: string;
 };
 
-const LoadingOverlay = ({ isLoading, message }: LoadingOverlayProps) => {
+const LoadingOverlay = ({isLoading, message}: LoadingOverlayProps) => {
     return (
         <>
             {isLoading &&

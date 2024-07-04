@@ -1,11 +1,12 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, {useCallback, useEffect, useState} from 'react';
+import {useLocation, useNavigate} from 'react-router-dom';
 import Header from '@/components/Header';
 import SideBar from '@/components/SideBar';
-import { authenticate } from '@/utils/authenticate';
+import {authenticate} from '@/utils/authenticate';
 import DashboardSheet from '@/pages/sheets/DashboardSheet';
 import FilesSheet from '@/pages/sheets/FilesSheet';
 import ProductsSheet from '@/pages/sheets/ProductsSheet';
+import UploadSheet from "@/pages/sheets/UploadSheet.tsx";
 
 const DashboardPage: React.FC = () => {
     const navigate = useNavigate();
@@ -26,18 +27,21 @@ const DashboardPage: React.FC = () => {
         navigate(`/${itemId}`);
     }, [navigate]);
 
-    const navigateTo = useCallback(() => {
-        setActiveItemId('files');
-    }, []);
+    const navigateTo = useCallback((page: string) => {
+        setActiveItemId(page);
+        navigate(`/${page}`);
+    }, [navigate]);
 
     const getContent = useCallback(() => {
         switch (activeItemId) {
             case 'dashboard':
-                return <DashboardSheet navigateTo={navigateTo} />;
+                return <DashboardSheet navigateTo={navigateTo}/>;
             case 'files':
-                return <FilesSheet />;
+                return <FilesSheet navigateTo={navigateTo}/>;
             case 'products':
-                return <ProductsSheet />;
+                return <ProductsSheet/>;
+            case 'upload':
+                return <UploadSheet navigateTo={navigateTo}/>;
             case 'customers':
                 return <p>Customers content will be displayed here</p>;
             case 'analytics':
@@ -53,9 +57,9 @@ const DashboardPage: React.FC = () => {
 
     return (
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
-            <SideBar handleActiveItem={handleSidebarItemClick} />
+            <SideBar handleActiveItem={handleSidebarItemClick}/>
             <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
-                <Header pageTitle={activeItemId} />
+                <Header pageTitle={activeItemId}/>
                 <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
                     {getContent()}
                 </main>

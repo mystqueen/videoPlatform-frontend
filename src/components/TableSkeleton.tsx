@@ -70,7 +70,7 @@ const TableSkeleton = () => {
                             <TableCell className=""><Skeleton className="h-4 w-[70px]"/></TableCell>
                             <TableCell className=""><Skeleton className="h-4 w-[70px]"/></TableCell>
                         </TableRow>
-                        
+
                     </TableBody>
                 </Table>
             </CardContent>

@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card.tsx";
-import { useEffect, useState } from "react";
+import {Card, CardContent, CardHeader} from "@/components/ui/card.tsx";
+import React, {useEffect, useState} from "react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -7,8 +7,8 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.tsx";
-import { MoreHorizontal } from "lucide-react";
-import { Button } from "@/components/ui/button.tsx";
+import {Loader2, MoreHorizontal} from "lucide-react";
+import {Button} from "@/components/ui/button.tsx";
 import {
     Dialog,
     DialogContent,
@@ -18,19 +18,19 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog.tsx";
-import { Input } from "@/components/ui/input.tsx";
-import { Textarea } from "@/components/ui/textarea.tsx";
-import { z } from "zod";
-import { FormProvider, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form.tsx";
-import { useToast } from "@/components/ui/use-toast.ts";
+import {Input} from "@/components/ui/input.tsx";
+import {Textarea} from "@/components/ui/textarea.tsx";
+import {z} from "zod";
+import {FormProvider, useForm} from "react-hook-form";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form.tsx";
+import {useToast} from "@/components/ui/use-toast.ts";
 import axios from "axios";
-import { BASE_URL } from "@/config.ts";
+import {BASE_URL} from "@/config.ts";
 
 const formSchema = z.object({
-    title: z.string().min(1, { message: "Title is required!" }),
-    description: z.string().min(1, { message: "Please enter a description!" }),
+    title: z.string().min(1, {message: "Title is required!"}),
+    description: z.string().min(1, {message: "Please enter a description!"}),
 });
 
 const FileCard = (props: {
@@ -39,11 +39,12 @@ const FileCard = (props: {
     fileSize: string;
     fileIcon: React.ReactNode;
     fileDescription?: string;
+    createdAt: string;
 }) => {
-    const { fileID, fileTitle, fileSize, fileIcon, fileDescription } = props;
+    const {fileID, fileTitle, fileSize, fileIcon, fileDescription, createdAt} = props;
 
     const [isDisabled, setIsDisabled] = useState(true);
-    const { toast } = useToast();
+    const {toast} = useToast();
     const newTab = (url: string) => window?.open(url, "_blank")?.focus();
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -59,21 +60,21 @@ const FileCard = (props: {
         return name.substring(0, maxLength) + "...";
     };
 
-    const { reset, watch, formState } = form;
-    const { isDirty, dirtyFields } = formState;
+    const {reset, watch, formState} = form;
+    const {isDirty, dirtyFields} = formState;
 
     useEffect(() => {
-        reset({ title: fileTitle, description: fileDescription || "" });
+        reset({title: fileTitle, description: fileDescription || ""});
     }, [fileTitle, fileDescription, reset]);
 
-    const axiosInstance = axios.create({
-        method: "GET",
+    const axiosDeleteInstance = axios.create({
+        method: "DELETE",
         headers: {
             "Content-Type": "application/json",
             authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
     });
-    axiosInstance.get(BASE_URL);
+
 
     const handleView = () => {
         setIsDisabled(true);
@@ -92,12 +93,33 @@ const FileCard = (props: {
             alert(`Title: ${updatedData.title}\nDescription:  ${updatedData.description}`);
             setIsDisabled(true);
         } else {
-            toast({ description: "No changes made!" });
+            toast({description: "No changes made!"});
         }
     };
 
-    const handleDelete = (fileData: object) => {
-        console.log(`deleting ${JSON.stringify(fileData)}`);
+    const handleDelete = (fileData: { fileID: string }) => {
+        toast({
+            description: "Deleting file...",
+            action: <Loader2 className="mr-2 h-4 w-4 animate-spin"/>,
+        })
+        console.log(fileData);
+        axiosDeleteInstance.delete(`${BASE_URL}/admin/file/delete/${fileData.fileID}`)
+            .then((response) => {
+                if (response.status === 200) {
+                    toast({description: "File deleted successfully!"});
+                } else {
+                    toast({
+                        description: response.data.error,
+                        variant: "destructive"
+                    });
+                }
+            }).catch((error) => {
+            console.error("Error deleting file:", error);
+            toast({
+                description: "Error deleting file!",
+                variant: "destructive"
+            });
+        });
     };
 
     const handleDownload = () => {
@@ -111,7 +133,7 @@ const FileCard = (props: {
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button aria-haspopup="true" size="icon" variant="ghost">
-                                <MoreHorizontal className="h-4 w-4" />
+                                <MoreHorizontal className="h-4 w-4"/>
                                 <span className="sr-only">Toggle menu</span>
                             </Button>
                         </DropdownMenuTrigger>
@@ -135,28 +157,30 @@ const FileCard = (props: {
                                 <FormField
                                     control={form.control}
                                     name="title"
-                                    render={({ field }) => (
+                                    render={({field}) => (
                                         <FormItem>
                                             <FormLabel>Title</FormLabel>
                                             <FormControl>
-                                                <Input type="text" placeholder="title" disabled={isDisabled} {...field} />
+                                                <Input type="text" placeholder="title"
+                                                       disabled={isDisabled} {...field} />
                                             </FormControl>
                                             <FormDescription></FormDescription>
-                                            <FormMessage />
+                                            <FormMessage/>
                                         </FormItem>
                                     )}
                                 />
                                 <FormField
                                     control={form.control}
                                     name="description"
-                                    render={({ field }) => (
+                                    render={({field}) => (
                                         <FormItem>
                                             <FormLabel>Description</FormLabel>
                                             <FormControl>
-                                                <Textarea placeholder="description" disabled={isDisabled} rows={4} {...field} />
+                                                <Textarea placeholder="description" disabled={isDisabled}
+                                                          rows={4} {...field} />
                                             </FormControl>
                                             <FormDescription></FormDescription>
-                                            <FormMessage />
+                                            <FormMessage/>
                                         </FormItem>
                                     )}
                                 />
@@ -165,9 +189,11 @@ const FileCard = (props: {
                                     <Button type="button" onClick={handleEdit} variant="ghost">
                                         {isDisabled ? "Edit" : "Cancel"}
                                     </Button>
-                                    <Button type="submit" className="px-3">
-                                        Save
-                                    </Button>
+                                    {isDirty &&
+                                        (<Button type="submit" className="px-3">
+                                            Save
+                                        </Button>)
+                                    }
                                 </DialogFooter>
                             </form>
                         </FormProvider>
@@ -179,7 +205,7 @@ const FileCard = (props: {
             </CardHeader>
             <CardContent className="flex flex-col items-center justify-center">
                 <div className="truncate">{truncateFileName(fileTitle, 15)}</div>
-                <p className="text-xs justify-between gap-2 text-muted-foreground">{fileSize} ● 2022-01-01</p>
+                <p className="text-xs justify-between gap-2 text-muted-foreground">{fileSize} ● {new Date(createdAt).toDateString()}</p>
             </CardContent>
         </Card>
     );

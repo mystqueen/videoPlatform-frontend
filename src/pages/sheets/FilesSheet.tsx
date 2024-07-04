@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import axios from "axios";
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -9,15 +9,15 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { ListFilter, Plus, Search } from "lucide-react";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import {Input} from "@/components/ui/input";
+import {ListFilter, Plus, Search} from "lucide-react";
 import FileCard from "@/components/FileCard";
 import FileCardSkeleton from "@/components/FileCardSkeleton";
 import getIconUrl from "@/utils/icons";
-import { BASE_URL } from "@/config";
+import {BASE_URL} from "@/config";
 
-const FilesSheet = () => {
+const FilesSheet: React.FC<{ navigateTo: (page: string) => void }> = ({navigateTo}) => {
     const [sizeFilter, setSizeFilter] = useState(false);
     const [dateFilter, setDateFilter] = useState(false);
     const [files, setFiles] = useState([]);
@@ -43,7 +43,7 @@ const FilesSheet = () => {
             }
         };
 
-        fetchData();
+        fetchData().then();
     }, []);
 
     const handleFilterClick = (filterOption: string) => {
@@ -58,7 +58,7 @@ const FilesSheet = () => {
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="outline" size="sm" className="h-7 gap-1">
-                                <ListFilter className="h-3.5 w-3.5" />
+                                <ListFilter className="h-3.5 w-3.5"/>
                                 <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
                   Filter
                 </span>
@@ -66,7 +66,7 @@ const FilesSheet = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
+                            <DropdownMenuSeparator/>
                             <DropdownMenuCheckboxItem onClick={() => handleFilterClick("size")} checked={sizeFilter}>
                                 Size
                             </DropdownMenuCheckboxItem>
@@ -75,8 +75,8 @@ const FilesSheet = () => {
                             </DropdownMenuCheckboxItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-                    <Button size="sm" className="h-7 gap-1">
-                        <Plus className="h-3.5 w-3.5" />
+                    <Button size="sm" className="h-7 gap-1" onClick={() => navigateTo("upload")}>
+                        <Plus className="h-3.5 w-3.5"/>
                         <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
               Upload File
             </span>
@@ -89,7 +89,7 @@ const FilesSheet = () => {
                     <CardDescription className="justify-between items-center flex gap-2">
                         Manage and view your files here.
                         <div className="relative ml-auto flex-1 md:grow-0">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"/>
                             <Input
                                 type="search"
                                 placeholder="Search..."
@@ -99,7 +99,7 @@ const FilesSheet = () => {
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="overflow-auto h-[400px]">
-                    <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-6">
+                    <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-5">
                         {isFilesLoaded ? (
                             files.length > 0 ? (
                                 files.map((file: {
@@ -107,24 +107,27 @@ const FilesSheet = () => {
                                     title: string,
                                     path: string,
                                     fileSize: string,
-                                    description: string
+                                    description: string,
+                                    createdAt: string
                                 }) => (
                                     <FileCard
                                         key={file._id}
                                         fileID={file._id}
                                         fileTitle={file.title}
-                                        fileIcon={<img src={getIconUrl(file.path)} alt="File Icon" className="h-12 w-12 text-muted-foreground" />}
+                                        fileIcon={<img src={getIconUrl(file.path)} alt="File Icon"
+                                                       className="h-12 w-12 text-muted-foreground"/>}
                                         fileSize={`${parseFloat(file.fileSize.split(" ")[0]).toFixed(1)} ${file.fileSize.split(" ")[1]}`}
                                         fileDescription={file.description}
+                                        createdAt={file.createdAt}
                                     />
                                 ))
                             ) : (
                                 <div className="flex justify-center items-center gap-4">
-                                    <img src="/public/no-data.png" className="w-56" alt="inbox" />
+                                    <img src="/public/no-data.png" className="w-56" alt="inbox"/>
                                 </div>
                             )
                         ) : (
-                            [...Array(12)].map((_, index) => <FileCardSkeleton key={index} />)
+                            [...Array(12)].map((_, index) => <FileCardSkeleton key={index}/>)
                         )}
                     </div>
                 </CardContent>

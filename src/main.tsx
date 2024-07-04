@@ -14,54 +14,58 @@ import React from 'react';
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <SignInPage />
+        element: <SignInPage/>
     },
     {
         path: "/signup",
-        element: <SignUpPage />
+        element: <SignUpPage/>
     },
     {
         path: "/verify",
-        element: <OtpVerification />
+        element: <OtpVerification/>
     },
     {
         path: "/dashboard",
-        element: <DashboardPage />,
-        errorElement: <Error404Page />,
+        element: <DashboardPage/>,
+        errorElement: <Error404Page/>,
     },
     {
         path: "/files",
-        element: <DashboardPage />
+        element: <DashboardPage/>
     },
     {
         path: "/customers",
-        element: <DashboardPage />
+        element: <DashboardPage/>
     },
     {
         path: "/products",
-        element: <DashboardPage />
+        element: <DashboardPage/>
     },
     {
         path: "/analytics",
-        element: <DashboardPage />
+        element: <DashboardPage/>
     },
     {
         path: "/settings",
-        element: <DashboardPage />
+        element: <DashboardPage/>
     },
     {
         path: "/profile",
-        element: <DashboardPage />
+        element: <DashboardPage/>
+    },
+    {
+        path: "/upload",
+        element: <DashboardPage/>
     },
     {
         path: "/test",
-        element: <TestPage />
+        element: <TestPage/>
     },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <RouterProvider router={router} />
-        <Toaster />
+        <RouterProvider router={router}/>
+        <Toaster/>
     </React.StrictMode>,
 )

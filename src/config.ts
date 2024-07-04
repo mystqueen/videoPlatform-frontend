@@ -1,4 +1,3 @@
-
 /**
  * Environment for the server. This is extracted from the environment variable
  */

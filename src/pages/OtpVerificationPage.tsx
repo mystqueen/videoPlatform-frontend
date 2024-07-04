@@ -188,7 +188,8 @@ const OtpVerification = () => {
                         </CardContent>
                         <CardFooter className="justify-center flex items-center">
                             <CardDescription>Didn't receive an OTP? </CardDescription>
-                            <Button  onClick={onResend} variant="ghost" className="text-sm ml-1 underline underline-offset-1">
+                            <Button onClick={onResend} variant="ghost"
+                                    className="text-sm ml-1 underline underline-offset-1">
                                 Resend
                             </Button>
                         </CardFooter>
@@ -240,7 +241,8 @@ const OtpVerification = () => {
                         </CardContent>
                         <CardFooter className="justify-center flex items-center">
                             <CardDescription>Didn't receive an OTP? </CardDescription>
-                            <Button onClick={onResend} variant="ghost" className="text-sm ml-1 underline underline-offset-1">
+                            <Button onClick={onResend} variant="ghost"
+                                    className="text-sm ml-1 underline underline-offset-1">
                                 Resend
                             </Button>
                         </CardFooter>

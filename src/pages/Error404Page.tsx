@@ -1,6 +1,6 @@
 import {Button} from "@/components/ui/button.tsx";
 
-const Error404Page =  () => {
+const Error404Page = () => {
     return (
         <div className="flex flex-col items-center justify-center h-screen">
             <div className="flex flex-col items-center">

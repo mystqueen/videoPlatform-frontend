@@ -1,6 +1,6 @@
 import {Button} from "@/components/ui/button.tsx";
 
-const TestPage =  () => {
+const TestPage = () => {
     return (
         <div className="flex flex-col items-center justify-center h-screen">
             <div className="flex flex-col items-center">
