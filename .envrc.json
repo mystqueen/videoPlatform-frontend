@@ -1,0 +1,5 @@
+{
+  "environment": "test",
+  "liveApiUrl": "https://file-server-zr8t.onrender.com",
+  "devApiUrl": "http://testserver.com:8080"
+}

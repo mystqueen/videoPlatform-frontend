@@ -14,6 +14,7 @@ import axios from "axios";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs.tsx";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {BASE_URL} from "@/config.ts";
 
 const FormSchema = z.object({
     pin: z.string().min(6, {
@@ -53,7 +54,7 @@ const OtpVerification = () => {
 
         const options = {
             method: 'POST',
-            url: `http://testserver.com:8080/${signInMethod}/otp/new`,
+            url: `${BASE_URL}/${signInMethod}/otp/new`,
             headers: {'Content-Type': 'application/json'},
             data: {
                 email: sessionStorage.getItem("email")
@@ -97,7 +98,7 @@ const OtpVerification = () => {
 
         const options = {
             method: 'POST',
-            url: `http://testserver.com:8080/${signInMethod}/otp/verify`,
+            url: `${BASE_URL}/${signInMethod}/otp/verify`,
             headers: {'Content-Type': 'application/json'},
             data: {
                 otp: values.pin,
@@ -187,7 +188,8 @@ const OtpVerification = () => {
                         </CardContent>
                         <CardFooter className="justify-center flex items-center">
                             <CardDescription>Didn't receive an OTP? </CardDescription>
-                            <Button  onClick={onResend} variant="ghost" className="text-sm ml-1 underline underline-offset-1">
+                            <Button onClick={onResend} variant="ghost"
+                                    className="text-sm ml-1 underline underline-offset-1">
                                 Resend
                             </Button>
                         </CardFooter>
@@ -239,7 +241,8 @@ const OtpVerification = () => {
                         </CardContent>
                         <CardFooter className="justify-center flex items-center">
                             <CardDescription>Didn't receive an OTP? </CardDescription>
-                            <Button onClick={onResend} variant="ghost" className="text-sm ml-1 underline underline-offset-1">
+                            <Button onClick={onResend} variant="ghost"
+                                    className="text-sm ml-1 underline underline-offset-1">
                                 Resend
                             </Button>
                         </CardFooter>
