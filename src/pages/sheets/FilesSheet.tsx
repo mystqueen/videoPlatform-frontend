@@ -1,193 +1,114 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {Button} from "@/components/ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuLabel,
-    DropdownMenuRadioGroup,
-    DropdownMenuRadioItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
-import {Input} from "@/components/ui/input";
-import {ListFilter, Plus, Search} from "lucide-react";
-import FileCard from "@/components/FileCard";
-import FileCardSkeleton from "@/components/FileCardSkeleton";
-import getIconUrl from "@/utils/icons";
-import {BASE_URL} from "@/config";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Plus } from "lucide-react";
+import { BASE_URL } from "@/config";
+import FileCardSkeleton from "@/components/FileCardSkeleton.tsx";
 
-const FilesSheet: React.FC<{ navigateTo: (page: string) => void }> = ({navigateTo}) => {
-    const [sizeFilter, setSizeFilter] = useState<"asc" | "desc" | "">("");
-    const [dateFilter, setDateFilter] = useState<"asc" | "desc" | "">("");
-    const [files, setFiles] = useState([]);
+
+interface File {
+    id: number;
+    title: string;
+    description: string;
+    size: number;
+    type: string;
+    url: string;
+    createdAt: Date;
+    updatedAt: Date;
+    // Add any other properties specific to your File object
+}
+const FilesSheet: React.FC<{ navigateTo: (page: string) => void }> = ({ navigateTo }) => {
+    const [currentFile, setCurrentFile] = useState<File | null>(null);
+    const [nextFile, setNextFile] = useState<File | null>(null);
+    const [previousFile, setPreviousFile] = useState<File | null>(null);
     const [isFilesLoaded, setIsFilesLoaded] = useState(false);
-    const [searchTerm, setSearchTerm] = useState("");
+    const [currentFileId, setCurrentFileId] = useState(1); // Starting with the first video ID
+
+    const fetchVideoData = async (id: number) => {
+        try {
+            const response = await axios.get(`${BASE_URL}/api/v1/video/${id}`);
+            setCurrentFile(response.data.video);
+            setNextFile(response.data.nextVideo);
+            setPreviousFile(response.data.previousVideo);
+            setIsFilesLoaded(true);
+        } catch (error) {
+            console.error("Error fetching video data:", error);
+            setIsFilesLoaded(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchData = async () => {
-            const axiosInstance = axios.create({
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'authorization': `Bearer ${sessionStorage.getItem("token")}`
-                },
-            });
+        fetchVideoData(currentFileId);
+    }, [currentFileId]);
 
-            try {
-                const response = await axiosInstance.get(`${BASE_URL}/admin/files`);
-                setFiles(response.data.data);
-                setIsFilesLoaded(true);
-            } catch (error) {
-                setIsFilesLoaded(true);
-                console.error("Error fetching files:", error);
+    const handlePreviousClick = () => {
+        if (previousFile) {
+            setCurrentFileId(previousFile.id);
+        }
+    };
+
+    const handleNextClick = () => {
+        if (nextFile) {
+            setCurrentFileId(nextFile.id);
+        }
+    };
+
+    const handleShareClick = () => {
+        if (currentFile){
+            const shareData = {
+                title: currentFile.title,
+                text: `Check out this video: ${currentFile.title}`,
+                url: window.location.href, // Assuming this URL points to the video page
+            };
+            if (navigator.share) {
+                navigator.share(shareData).catch(console.error);
+            } else {
+                console.log("Web Share API is not supported in this browser.");
             }
-        };
-
-        fetchData().then();
-    }, []);
-
-    const handleFilterClick = (filterOption: string, order: "asc" | "desc" | "") => {
-        if (filterOption === "size") {
-            setSizeFilter(order);
-            setDateFilter("");
-        } else if (filterOption === "date") {
-            setDateFilter(order);
-            setSizeFilter("");
         }
     };
-
-    const applyFilters = (file: {title: string, fileSize: string, createdAt: string}) => {
-        return file.title.toLowerCase().includes(searchTerm.toLowerCase());
-    };
-
-    const convertToBytes = (size: string) => {
-        const [value, unit] = size.split(" ");
-        const parsedValue = parseFloat(value);
-        switch (unit.toLowerCase()) {
-            case "gb":
-                return parsedValue * 1024 * 1024 * 1024;
-            case "mb":
-                return parsedValue * 1024 * 1024;
-            case "kb":
-                return parsedValue * 1024;
-            case "bytes":
-            default:
-                return parsedValue;
-        }
-    };
-
-    const sortFiles = (files: any[]) => {
-        let sortedFiles = [...files];
-        if (sizeFilter) {
-            sortedFiles.sort((a, b) => {
-                const sizeA = convertToBytes(a.fileSize);
-                const sizeB = convertToBytes(b.fileSize);
-                return sizeFilter === "asc" ? sizeA - sizeB : sizeB - sizeA;
-            });
-        } else if (dateFilter) {
-            sortedFiles.sort((a, b) => {
-                const dateA = new Date(a.createdAt).getTime();
-                const dateB = new Date(b.createdAt).getTime();
-                return dateFilter === "asc" ? dateA - dateB : dateB - dateA;
-            });
-        }
-        return sortedFiles;
-    };
-
-    const filteredFiles = sortFiles(files.filter(applyFilters));
 
     return (
         <>
             <div className="flex items-center">
                 <div className="ml-auto flex items-center gap-2">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm" className="h-7 gap-1">
-                                <ListFilter className="h-3.5 w-3.5"/>
-                                <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                                    Filter
-                                </span>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Filter by</DropdownMenuLabel>
-                            <DropdownMenuSeparator/>
-                            <DropdownMenuLabel>Size</DropdownMenuLabel>
-                            <DropdownMenuRadioGroup value={sizeFilter} onValueChange={(value) => handleFilterClick("size", value as "asc" | "desc")}>
-                                <DropdownMenuRadioItem value="asc">Ascending</DropdownMenuRadioItem>
-                                <DropdownMenuRadioItem value="desc">Descending</DropdownMenuRadioItem>
-                            </DropdownMenuRadioGroup>
-                            <DropdownMenuSeparator/>
-                            <DropdownMenuLabel>Date</DropdownMenuLabel>
-                            <DropdownMenuRadioGroup value={dateFilter} onValueChange={(value) => handleFilterClick("date", value as "asc" | "desc")}>
-                                <DropdownMenuRadioItem value="asc">Ascending</DropdownMenuRadioItem>
-                                <DropdownMenuRadioItem value="desc">Descending</DropdownMenuRadioItem>
-                            </DropdownMenuRadioGroup>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
                     <Button size="sm" className="h-7 gap-1" onClick={() => navigateTo("upload")}>
-                        <Plus className="h-3.5 w-3.5"/>
-                        <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                            Upload File
-                        </span>
+                        <Plus className="h-3.5 w-3.5" />
+                        <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">Upload File</span>
                     </Button>
                 </div>
             </div>
             <Card x-chunk="dashboard-06-chunk-0">
                 <CardHeader>
-                    <CardTitle>Files</CardTitle>
-                    <CardDescription className="justify-between items-center flex gap-2">
-                        Manage and view your files here.
-                        <div className="relative ml-auto flex-1 md:grow-0">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"/>
-                            <Input
-                                type="search"
-                                placeholder="Search..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
-                            />
-                        </div>
-                    </CardDescription>
+                    <CardTitle>
+                        <img src="C:\Users\DELL\Documents\Projects\Video Platform\src\main\resources\static\img" alt="Business Logo" className="w-16 h-16 inline-block mr-2" />
+                        Video Page
+                    </CardTitle>
                 </CardHeader>
-                <CardContent className="overflow-auto h-[400px]">
-                    <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-5">
-                        {isFilesLoaded ? (
-                            filteredFiles.length > 0 ? (
-                                filteredFiles.map((file: {
-                                    _id: string,
-                                    title: string,
-                                    path: string,
-                                    fileSize: string,
-                                    description: string,
-                                    createdAt: string
-                                }) => (
-                                    <FileCard
-                                        key={file._id}
-                                        fileID={file._id}
-                                        fileTitle={file.title}
-                                        fileIcon={<img src={getIconUrl(file.path)} alt="File Icon"
-                                                       className="h-12 w-12 text-muted-foreground"/>}
-                                        fileSize={`${parseFloat(file.fileSize.split(" ")[0]).toFixed(1)} ${file.fileSize.split(" ")[1]}`}
-                                        fileDescription={file.description}
-                                        createdAt={file.createdAt}
-                                    />
-                                ))
-                            ) : (
-                                <div className="flex justify-center items-center gap-4">
-                                    <img src="/public/no-data.png" className="w-56" alt="inbox"/>
-                                </div>
-                            )
-                        ) : (
-                            [...Array(12)].map((_, index) => <FileCardSkeleton key={index}/>)
-                        )}
-                    </div>
+                <CardContent className="overflow-auto h-[400px] flex flex-col items-center">
+                    {isFilesLoaded ? (
+                        <>
+                            <video controls className="w-full max-w-md">
+                                <source src={currentFile.url} type="video/mp4" />
+                                Your browser does not support the video tag.
+                            </video>
+                            <div className="mt-4 text-center">
+                                <h2 className="text-lg font-semibold">{currentFile.title}</h2>
+                                <p className="text-sm text-muted-foreground">{currentFile.description}</p>
+                            </div>
+                            <div className="mt-4 flex gap-2">
+                                {previousFile && <Button onClick={handlePreviousClick}>Previous</Button>}
+                                {nextFile && <Button onClick={handleNextClick}>Next</Button>}
+                                <Button onClick={handleShareClick}>Share</Button>
+                            </div>
+                        </>
+                    ) : (
+                        <FileCardSkeleton />
+                    )}
                 </CardContent>
             </Card>
         </>
     );
 };
-
 export default FilesSheet;

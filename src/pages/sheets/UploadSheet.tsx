@@ -50,14 +50,14 @@ const UploadSheet: React.FC<{ navigateTo: (page: string) => void }> = ({navigate
         const axiosInstance = axios.create({
             headers: {
                 'Content-Type': 'multipart/form-data',
-                Authorization: `Bearer ${sessionStorage.getItem("token")}`
+                // Authorization: `Bearer ${sessionStorage.getItem("token")}`
             },
         });
         try {
-            const response = await axiosInstance.post(`${BASE_URL}/admin/file/upload/aws`, formData);
+            const response = await axiosInstance.post(`${BASE_URL}/api/v1/admin/upload`, formData);
             console.log(response.data);
             toast({
-                title: "File uploaded successfully!",
+                title: "Video uploaded successfully!",
             });
             navigateTo("files");
         } catch (error: any) {

@@ -9,6 +9,7 @@ import DashboardPage from "@/pages/DashboardPage.tsx";
 import TestPage from "@/pages/TestPage.tsx";
 import Error404Page from "@/pages/Error404Page.tsx";
 import React from 'react';
+import VideoPage from "@/pages/VideoPage.tsx";
 
 
 const router = createBrowserRouter([
@@ -31,31 +32,38 @@ const router = createBrowserRouter([
     },
     {
         path: "/files",
-        element: <DashboardPage/>
+        element: <DashboardPage/>,
+        errorElement: <Error404Page/>
     },
     {
         path: "/customers",
-        element: <DashboardPage/>
+        element: <DashboardPage/>,
+        errorElement: <Error404Page/>
     },
     {
         path: "/products",
-        element: <DashboardPage/>
+        element: <DashboardPage/>,
+        errorElement: <Error404Page/>
     },
     {
         path: "/analytics",
-        element: <DashboardPage/>
+        element: <DashboardPage/>,
+        errorElement: <Error404Page/>
     },
     {
         path: "/settings",
-        element: <DashboardPage/>
+        element: <DashboardPage/>,
+        errorElement: <Error404Page/>
     },
     {
         path: "/profile",
-        element: <DashboardPage/>
+        element: <DashboardPage/>,
+        errorElement: <Error404Page/>
     },
     {
         path: "/upload",
-        element: <DashboardPage/>
+        element: <DashboardPage/>,
+        errorElement: <Error404Page/>
     },
     {
         path: "/test",

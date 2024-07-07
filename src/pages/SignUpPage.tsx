@@ -59,6 +59,7 @@ const SignUpPage = () => {
 
     const handleTabValueChange = (value: string) => {
         setSignInMethod(value);
+        console.log(signInMethod);
     }
 
     const onSubmit = (values: z.infer<typeof formSchema>) => {
@@ -69,10 +70,10 @@ const SignUpPage = () => {
 
         const options = {
             method: 'POST',
-            url: `${BASE_URL}/${signInMethod}/register`,
+            url: `${BASE_URL}/api/v1/${signInMethod}/signup`,
             headers: {'Content-Type': 'application/json'},
             data: {
-                fullname: values.fullname,
+                username: values.fullname,
                 email: values.email,
                 password: values.password
             }
@@ -89,13 +90,13 @@ const SignUpPage = () => {
                 setTimeout(() => navigate("/verify"), 1000);
             } else {
                 toast({
-                    description: response.data.error,
+                    description: response.data.message,
                     variant: "destructive",
                 });
             }
         }).catch((error) => {
             toast({
-                description: error.response?.data.error || error.message,
+                description: error.response?.data.message || error.message,
                 variant: "destructive",
             });
         });

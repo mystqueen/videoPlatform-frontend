@@ -45,12 +45,12 @@ const DashboardSheet: React.FC<{ navigateTo: (page: string) => void }> = ({navig
                 recentFilesRes,
                 recentEmailsRes
             ] = await Promise.all([
-                axiosInstance.get(`${BASE_URL}/admin/downloads/count`),
-                axiosInstance.get(`${BASE_URL}/admin/files/count`),
-                axiosInstance.get(`${BASE_URL}/admin/emails/count`),
-                axiosInstance.get(`${BASE_URL}/admin/users/count`),
-                axiosInstance.get(`${BASE_URL}/admin/files/recent`),
-                axiosInstance.get(`${BASE_URL}/admin/emails/recent`)
+                axiosInstance.get(`${BASE_URL}/api/v1/admin/downloads/count`),
+                axiosInstance.get(`${BASE_URL}/api/v1/admin/videos/count`),
+                axiosInstance.get(`${BASE_URL}/api/v1/admin/emails/count`),
+                axiosInstance.get(`${BASE_URL}/api/v1/admin/users/count`),
+                axiosInstance.get(`${BASE_URL}/api/v1/admin/files/recent`),
+                axiosInstance.get(`${BASE_URL}/api/v1/admin/emails/recent`)
             ]);
 
             setData({

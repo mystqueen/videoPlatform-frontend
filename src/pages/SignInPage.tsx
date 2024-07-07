@@ -62,7 +62,7 @@ const SignInPage = () => {
 
         const options = {
             method: 'POST',
-            url: `${BASE_URL}/${signInMethod}/login`,
+            url: `${BASE_URL}/api/v1/${signInMethod}/login`,
             headers: {'Content-Type': 'application/json'},
             data: {
                 email: values.email,
@@ -77,13 +77,20 @@ const SignInPage = () => {
                     description: "Logged in successfully!",
                 });
                 console.log(response.data)
+                // sessionStorage.removeItem("email");
+                //
+                // sessionStorage.setItem("name", response.data.data.fullname);
+                // sessionStorage.setItem("token", response.data.data.token);
+                // sessionStorage.setItem("user_type", signInMethod);
+                //
+                // setTimeout(() => navigate("/dashboard"), 1500);
 
-                if (response.data.data.emailVerified) {
+                if (response.data.data.accountVerified) {
                     setTimeout(() => navigate("/dashboard"), 1500);
                     sessionStorage.removeItem("email");
 
                     sessionStorage.setItem("name", response.data.data.fullname);
-                    sessionStorage.setItem("token", response.data.data.authentication.session.token);
+                    sessionStorage.setItem("token", response.data.data.token);
                     sessionStorage.setItem("user_type", signInMethod);
                 } else {
                     sessionStorage.setItem("email", response.data.data.email);
@@ -92,14 +99,14 @@ const SignInPage = () => {
 
             } else {
                 toast({
-                    description: response.data.error,
+                    description: response.data.message,
                     variant: "destructive",
                 });
             }
         }).catch((error) => {
             setIsLoading(false);
             toast({
-                description: error.response?.data.error || error.message,
+                description: error.response?.data.message || error.message,
                 variant: "destructive",
             });
         });

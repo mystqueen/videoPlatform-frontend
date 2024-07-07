@@ -3,7 +3,7 @@ import {useLocation, useNavigate} from 'react-router-dom';
 import Header from '@/components/Header';
 import SideBar from '@/components/SideBar';
 import {authenticate} from '@/utils/authenticate';
-import DashboardSheet from '@/pages/sheets/DashboardSheet';
+// import DashboardSheet from '@/pages/sheets/DashboardSheet';
 import FilesSheet from '@/pages/sheets/FilesSheet';
 import ProductsSheet from '@/pages/sheets/ProductsSheet';
 import UploadSheet from "@/pages/sheets/UploadSheet.tsx";
@@ -34,8 +34,8 @@ const DashboardPage: React.FC = () => {
 
     const getContent = useCallback(() => {
         switch (activeItemId) {
-            case 'dashboard':
-                return <DashboardSheet navigateTo={navigateTo}/>;
+            // case 'dashboard':
+            //     return <DashboardSheet navigateTo={navigateTo}/>;
             case 'files':
                 return <FilesSheet navigateTo={navigateTo}/>;
             case 'products':

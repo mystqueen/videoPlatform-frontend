@@ -6,7 +6,6 @@ import {z} from "zod"
 
 import {Button} from "@/components/ui/button"
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form"
-import {InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot,} from "@/components/ui/input-otp"
 import {toast} from "@/components/ui/use-toast"
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card.tsx";
 import {Loader2} from "lucide-react";
@@ -15,10 +14,11 @@ import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs.tsx
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {BASE_URL} from "@/config.ts";
+import {Input} from "@/components/ui/input.tsx";
 
 const FormSchema = z.object({
-    pin: z.string().min(6, {
-        message: "Your one-time password must be 6 characters.",
+    pin: z.string().min(20, {
+        message: "Your one-time password must be more than 20 characters.",
     }),
 })
 
@@ -53,8 +53,8 @@ const OtpVerification = () => {
         }
 
         const options = {
-            method: 'POST',
-            url: `${BASE_URL}/${signInMethod}/otp/new`,
+            method: 'PUT',
+            url: `${BASE_URL}/api/v1/${signInMethod}/newToken`,
             headers: {'Content-Type': 'application/json'},
             data: {
                 email: sessionStorage.getItem("email")
@@ -70,13 +70,13 @@ const OtpVerification = () => {
                 console.log(response.data)
             } else {
                 toast({
-                    description: response.data.error,
+                    description: response.data.message,
                     variant: "destructive",
                 });
             }
         }).catch((error) => {
             toast({
-                description: error.response?.data.error || error.message,
+                description: error.response?.data.message || error.message,
                 variant: "destructive",
             });
         });
@@ -97,38 +97,34 @@ const OtpVerification = () => {
         }
 
         const options = {
-            method: 'POST',
-            url: `${BASE_URL}/${signInMethod}/otp/verify`,
+            method: 'GET',
+            url: `${BASE_URL}/api/v1/${signInMethod}/verify-email?authToken=${values.pin}`,
             headers: {'Content-Type': 'application/json'},
-            data: {
-                otp: values.pin,
-                email: sessionStorage.getItem("email")
-            }
         };
 
         axios.request(options).then((response) => {
             if (response.status === 200) {
                 toast({
-                    description: "Email verified successfully!",
+                    description: response.data.message,
                 });
 
                 console.log(response.data)
                 sessionStorage.removeItem("email");
 
                 sessionStorage.setItem("name", response.data.data.fullname);
-                sessionStorage.setItem("token", response.data.data.authentication.session.token);
+                sessionStorage.setItem("token", response.data.data.token);
                 sessionStorage.setItem("user_type", signInMethod);
 
-                setTimeout(() => navigate("/dashboard"), 1500);
+                setTimeout(() => navigate("/files"), 1500);
             } else {
                 toast({
-                    description: response.data.error,
+                    description: response.data.message,
                     variant: "destructive",
                 });
             }
         }).catch((error) => {
             toast({
-                description: error.response?.data.error || error.message,
+                description: error.response?.data.message || error.message,
                 variant: "destructive",
             });
         });
@@ -147,7 +143,7 @@ const OtpVerification = () => {
                         <CardHeader>
                             <CardTitle>Verify Admin Email</CardTitle>
                             <CardDescription className="text-sm">
-                                Verify your email with the OTP code.
+                                Verify your email with the OTP Token.
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -160,22 +156,10 @@ const OtpVerification = () => {
                                             <FormItem>
                                                 <FormLabel>One-Time Password</FormLabel>
                                                 <FormControl>
-                                                    <InputOTP maxLength={6} {...field}>
-                                                        <InputOTPGroup>
-                                                            <InputOTPSlot index={0}/>
-                                                            <InputOTPSlot index={1}/>
-                                                            <InputOTPSlot index={2}/>
-                                                        </InputOTPGroup>
-                                                        <InputOTPSeparator/>
-                                                        <InputOTPGroup>
-                                                            <InputOTPSlot index={3}/>
-                                                            <InputOTPSlot index={4}/>
-                                                            <InputOTPSlot index={5}/>
-                                                        </InputOTPGroup>
-                                                    </InputOTP>
+                                                    <Input type='text' placeholder='Enter token here' {...field} />
                                                 </FormControl>
                                                 <FormDescription>
-                                                    Please enter the one-time password sent to your email.
+                                                    Please enter the one-time token sent to your email.
                                                 </FormDescription>
                                                 <FormMessage/>
                                             </FormItem>
@@ -200,7 +184,7 @@ const OtpVerification = () => {
                         <CardHeader>
                             <CardTitle>Verify User Email</CardTitle>
                             <CardDescription className="text-sm">
-                                Verify your email with the OTP code.
+                                Verify your email with the OTP token.
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -213,22 +197,10 @@ const OtpVerification = () => {
                                             <FormItem>
                                                 <FormLabel>One-Time Password</FormLabel>
                                                 <FormControl>
-                                                    <InputOTP maxLength={6} {...field}>
-                                                        <InputOTPGroup>
-                                                            <InputOTPSlot index={0}/>
-                                                            <InputOTPSlot index={1}/>
-                                                            <InputOTPSlot index={2}/>
-                                                        </InputOTPGroup>
-                                                        <InputOTPSeparator/>
-                                                        <InputOTPGroup>
-                                                            <InputOTPSlot index={3}/>
-                                                            <InputOTPSlot index={4}/>
-                                                            <InputOTPSlot index={5}/>
-                                                        </InputOTPGroup>
-                                                    </InputOTP>
+                                                    <Input type='text' placeholder='Enter token here' {...field}/>
                                                 </FormControl>
                                                 <FormDescription>
-                                                    Please enter the one-time password sent to your email.
+                                                    Please enter the one-time token sent to your email.
                                                 </FormDescription>
                                                 <FormMessage/>
                                             </FormItem>
