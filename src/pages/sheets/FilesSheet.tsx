@@ -90,12 +90,12 @@ const FilesSheet: React.FC<{ navigateTo: (page: string) => void }> = ({ navigate
                     {isFilesLoaded ? (
                         <>
                             <video controls className="w-full max-w-md">
-                                <source src={currentFile.url} type="video/mp4" />
+                                <source src={currentFile?.url} type="video/mp4" />
                                 Your browser does not support the video tag.
                             </video>
                             <div className="mt-4 text-center">
-                                <h2 className="text-lg font-semibold">{currentFile.title}</h2>
-                                <p className="text-sm text-muted-foreground">{currentFile.description}</p>
+                                <h2 className="text-lg font-semibold">{currentFile?.title}</h2>
+                                <p className="text-sm text-muted-foreground">{currentFile?.description}</p>
                             </div>
                             <div className="mt-4 flex gap-2">
                                 {previousFile && <Button onClick={handlePreviousClick}>Previous</Button>}

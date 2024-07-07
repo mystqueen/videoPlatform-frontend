@@ -60,7 +60,7 @@ const UploadSheet: React.FC<{ navigateTo: (page: string) => void }> = ({navigate
                 title: "Video uploaded successfully!",
             });
             navigateTo("files");
-        } catch (error: any) {
+        } catch (error) {
             console.error(error);
             toast({
                 title: "An error occurred while uploading the file.",
