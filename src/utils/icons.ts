@@ -4,26 +4,11 @@ function getIconUrl(fileUrl: string): string {
         'mp3': 'audio.png',
         'zip': 'compressed.png',
         'rar': 'compressed.png',
-        'xls': 'excel.png',
-        'xlsx': 'excel.png',
-        'gif': 'gif.png',
-        'html': 'html.png',
-        'htm': 'html.png',
-        'jpg': 'jpg.png',
-        'jpeg': 'jpg.png',
-        'png': 'jpg.png',
         'link': 'link.png',
-        'pdf': 'pdf.png',
-        'ppt': 'ppt.png',
-        'pptx': 'ppt.png',
-        'psd': 'psd.png',
-        'svg': 'svg.png',
-        'txt': 'txt.png',
+        'unknown': 'unknown.png',
         'mp4': 'video.png',
         'avi': 'video.png',
         'mov': 'video.png',
-        'doc': 'word.png',
-        'docx': 'word.png'
     };
 
     const parts = fileUrl.split('.');

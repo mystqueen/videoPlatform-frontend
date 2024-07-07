@@ -3,29 +3,12 @@ function getIconUrl(fileUrl: string): string {
     const iconMapping: { [key: string]: string } = {
         'ai': 'ai.png',
         'mp3': 'audio.png',
-        'zip': 'compressed.png',
-        'rar': 'compressed.png',
-        'xls': 'excel.png',
-        'xlsx': 'excel.png',
-        'gif': 'gif.png',
-        'html': 'html.png',
-        'htm': 'html.png',
-        'jpg': 'jpg.png',
-        'jpeg': 'jpg.png',
-        'png': 'jpg.png',  // Assuming png uses the same icon as jpg
         'link': 'link.png',
-        'pdf': 'pdf.png',
-        'ppt': 'ppt.png',
-        'pptx': 'ppt.png',
-        'psd': 'psd.png',
-        'svg': 'svg.png',
-        'txt': 'txt.png',
         'unknown': 'unknown.png',
         'mp4': 'video.png',
         'avi': 'video.png',
         'mov': 'video.png',
-        'doc': 'word.png',
-        'docx': 'word.png'
+
     };
 
     // Extract the file extension from the URL
@@ -41,4 +24,4 @@ function getIconUrl(fileUrl: string): string {
 
 // Example usage:
 const fileUrl = 'http://example.com/document.backup.pdf';
-console.log(getIconUrl(fileUrl));  // Output: /assets/icons/pdf.png
+console.log(getIconUrl(fileUrl));

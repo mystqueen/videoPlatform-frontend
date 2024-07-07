@@ -24,6 +24,7 @@ const AvatarImage = React.forwardRef<
 >(({className, ...props}, ref) => (
     <AvatarPrimitive.Image
         ref={ref}
+        src={require("@/components/ui/images.png")}
         className={cn("aspect-square h-full w-full", className)}
         {...props}
     />

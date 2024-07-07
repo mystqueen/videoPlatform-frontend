@@ -1,12 +1,13 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {useLocation, useNavigate} from 'react-router-dom';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import SideBar from '@/components/SideBar';
-import {authenticate} from '@/utils/authenticate';
+import { authenticate } from '@/utils/authenticate';
 // import DashboardSheet from '@/pages/sheets/DashboardSheet';
 import FilesSheet from '@/pages/sheets/FilesSheet';
 import ProductsSheet from '@/pages/sheets/ProductsSheet';
 import UploadSheet from "@/pages/sheets/UploadSheet.tsx";
+import VideoPage from '@/pages/sheets/VideoPage';
 
 const DashboardPage: React.FC = () => {
     const navigate = useNavigate();
@@ -15,6 +16,7 @@ const DashboardPage: React.FC = () => {
     const [activeItemId, setActiveItemId] = useState(
         location.pathname === '/' ? 'dashboard' : location.pathname.substring(1)
     );
+    const [currentVideoId, setCurrentVideoId] = useState<number | null>(null);
 
     useEffect(() => {
         if (!authenticate()) {
@@ -27,9 +29,12 @@ const DashboardPage: React.FC = () => {
         navigate(`/${itemId}`);
     }, [navigate]);
 
-    const navigateTo = useCallback((page: string) => {
+    const navigateTo = useCallback((page: string, id?: number) => {
         setActiveItemId(page);
-        navigate(`/${page}`);
+        if (page === 'videoPage' && id) {
+            setCurrentVideoId(id);
+        }
+        navigate(`/${page}${id ? `/${id}` : ''}`);
     }, [navigate]);
 
     const getContent = useCallback(() => {
@@ -39,9 +44,11 @@ const DashboardPage: React.FC = () => {
             case 'files':
                 return <FilesSheet navigateTo={navigateTo}/>;
             case 'products':
-                return <ProductsSheet/>;
+                return <ProductsSheet />;
             case 'upload':
-                return <UploadSheet navigateTo={navigateTo}/>;
+                return <UploadSheet navigateTo={navigateTo} />;
+            case 'videoPage':
+                return currentVideoId !== null ? <VideoPage videoId={currentVideoId} navigateTo={navigateTo} /> : <p>No video selected</p>;
             case 'customers':
                 return <p>Customers content will be displayed here</p>;
             case 'analytics':
@@ -53,13 +60,13 @@ const DashboardPage: React.FC = () => {
             default:
                 return <p>Invalid content</p>;
         }
-    }, [activeItemId, navigateTo]);
+    }, [activeItemId, navigateTo, currentVideoId]);
 
     return (
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
-            <SideBar handleActiveItem={handleSidebarItemClick}/>
+            <SideBar handleActiveItem={handleSidebarItemClick} />
             <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
-                <Header pageTitle={activeItemId}/>
+                <Header pageTitle={activeItemId} />
                 <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
                     {getContent()}
                 </main>
