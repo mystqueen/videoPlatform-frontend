@@ -24,7 +24,7 @@ const FormSchema = z.object({
     })
 });
 
-const UploadSheet: React.FC<{ navigateTo: (page: string) => void }> = ({navigateTo}) => {
+const UploadSheet: React.FC<{ navigateTo: (page: string) => void }> = () => {
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
@@ -53,24 +53,9 @@ const UploadSheet: React.FC<{ navigateTo: (page: string) => void }> = ({navigate
                 // Authorization: `Bearer ${sessionStorage.getItem("token")}`
             },
         });
-        try {
-            const response = await axiosInstance.post(`${BASE_URL}/api/v1/admin/upload`, formData);
-            console.log(response.data);
-            toast({
-                title: "Video uploaded successfully!",
+            await axiosInstance.post(`${BASE_URL}/api/v1/admin/upload`, formData).then(() => {
+                toast({ description: "Uploaded successfully"})
             });
-            navigateTo("files");
-        } catch (error) {
-            console.error(error);
-            toast({
-                title: "An error occurred while uploading the file.",
-                description: (
-                    <div>
-                        {error.response?.data?.error ?? "Unknown error"}
-                    </div>
-                ),
-            });
-        }
     }
 
     return (
