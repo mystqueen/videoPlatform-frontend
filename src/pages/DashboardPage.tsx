@@ -1,22 +1,22 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Header from '@/components/Header';
 import SideBar from '@/components/SideBar';
 import { authenticate } from '@/utils/authenticate';
-// import DashboardSheet from '@/pages/sheets/DashboardSheet';
 import FilesSheet from '@/pages/sheets/FilesSheet';
-import ProductsSheet from '@/pages/sheets/ProductsSheet';
 import UploadSheet from "@/pages/sheets/UploadSheet.tsx";
 import VideoPage from '@/pages/sheets/VideoPage';
+import Customers from "@/pages/sheets/Customers.tsx";
 
 const DashboardPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { id } = useParams<{ id: string }>();
 
     const [activeItemId, setActiveItemId] = useState(
-        location.pathname === '/' ? 'dashboard' : location.pathname.substring(1)
+        location.pathname === '/' ? 'files' : location.pathname.substring(1).split('/')[0]
     );
-    const [currentVideoId, setCurrentVideoId] = useState<number | null>(null);
+    const [currentVideoId, setCurrentVideoId] = useState<number | null>(id ? parseInt(id) : null);
 
     useEffect(() => {
         if (!authenticate()) {
@@ -39,20 +39,16 @@ const DashboardPage: React.FC = () => {
 
     const getContent = useCallback(() => {
         switch (activeItemId) {
-            // case 'dashboard':
-            //     return <DashboardSheet navigateTo={navigateTo}/>;
             case 'files':
-                return <FilesSheet navigateTo={navigateTo}/>;
-            case 'products':
-                return <ProductsSheet />;
+                return <FilesSheet navigateTo={navigateTo} />;
             case 'upload':
                 return <UploadSheet navigateTo={navigateTo} />;
             case 'videoPage':
                 return currentVideoId !== null ? <VideoPage videoId={currentVideoId} navigateTo={navigateTo} /> : <p>No video selected</p>;
             case 'customers':
-                return <p>Customers content will be displayed here</p>;
-            case 'analytics':
-                return <p>Analytics content will be displayed here</p>;
+                return <Customers navigateTo={navigateTo} />;
+            case 'deleteUser':
+                return <Customers navigateTo={navigateTo} />;
             case 'settings':
                 return <p>Settings content will be displayed here</p>;
             case 'profile':

@@ -103,7 +103,7 @@ const OtpVerification = () => {
         };
 
         axios.request(options).then((response) => {
-            if (response.status === 200) {
+            if (response.status === 202) {
                 toast({
                     description: response.data.message,
                 });
@@ -115,7 +115,7 @@ const OtpVerification = () => {
                 sessionStorage.setItem("token", response.data.data.token);
                 sessionStorage.setItem("user_type", signInMethod);
 
-                setTimeout(() => navigate("/files"), 1500);
+                setTimeout(() => navigate("/dashboard"), 1500);
             } else {
                 toast({
                     description: response.data.message,

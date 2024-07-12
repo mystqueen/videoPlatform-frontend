@@ -1,16 +1,16 @@
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
-import {Button} from "@/components/ui/button";
-import {Input} from "@/components/ui/input";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useForm} from "react-hook-form";
-import {z} from "zod";
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {toast} from "@/components/ui/use-toast";
-import {Textarea} from "@/components/ui/textarea";
-import axios from "axios";
-import {BASE_URL} from "@/config";
-import {Loader2} from "lucide-react";
 import React from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { toast } from "@/components/ui/use-toast";
+import { Textarea } from "@/components/ui/textarea";
+import axios from "axios";
+import { BASE_URL } from "@/config";
+import { Loader2 } from "lucide-react";
 
 const FormSchema = z.object({
     title: z.string().min(4, {
@@ -24,7 +24,7 @@ const FormSchema = z.object({
     })
 });
 
-const UploadSheet: React.FC<{ navigateTo: (page: string) => void }> = () => {
+const UploadSheet: React.FC<{ navigateTo: (page: string) => void }> = ({ navigateTo }) => {
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
@@ -37,7 +37,7 @@ const UploadSheet: React.FC<{ navigateTo: (page: string) => void }> = () => {
     async function onSubmit(data: z.infer<typeof FormSchema>) {
         toast({
             title: "Uploading file....!",
-            action: <Loader2 className="mr-2 h-4 w-4 animate-spin"/>,
+            action: <Loader2 className="mr-2 h-4 w-4 animate-spin" />,
         });
 
         const formData = new FormData();
@@ -50,12 +50,17 @@ const UploadSheet: React.FC<{ navigateTo: (page: string) => void }> = () => {
         const axiosInstance = axios.create({
             headers: {
                 'Content-Type': 'multipart/form-data',
-                // Authorization: `Bearer ${sessionStorage.getItem("token")}`
             },
         });
-            await axiosInstance.post(`${BASE_URL}/api/v1/admin/upload`, formData).then(() => {
-                toast({ description: "Uploaded successfully"})
-            });
+
+        try {
+            await axiosInstance.post(`${BASE_URL}/api/v1/admin/upload`, formData);
+            toast({ description: "Uploaded successfully" });
+            navigateTo("files"); // Navigate to the files page or refresh the list
+        } catch (error) {
+            toast({ description: "Upload failed. Please try again." });
+            console.error('Upload error', error);
+        }
     }
 
     return (
@@ -74,46 +79,42 @@ const UploadSheet: React.FC<{ navigateTo: (page: string) => void }> = () => {
                             <FormField
                                 control={form.control}
                                 name="title"
-                                render={({field}) => (
+                                render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Title</FormLabel>
                                         <FormControl>
                                             <Input placeholder="Title" {...field} />
                                         </FormControl>
-                                        <FormMessage/>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
                             <FormField
                                 control={form.control}
                                 name="description"
-                                render={({field}) => (
+                                render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Description</FormLabel>
                                         <FormControl>
                                             <Textarea placeholder="Description" rows={4} {...field} />
                                         </FormControl>
-                                        <FormMessage/>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
                             <FormField
                                 control={form.control}
                                 name="file"
-                                render={({field}) => (
+                                render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>File</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="file"
-                                                {...form.register("file", {
-                                                    onChange: (event) => {
-                                                        field.onChange(event.target.files);
-                                                    }
-                                                })}
+                                                onChange={(event) => field.onChange(event.target.files)}
                                             />
                                         </FormControl>
-                                        <FormMessage/>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
